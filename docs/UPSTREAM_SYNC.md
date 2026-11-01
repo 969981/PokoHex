@@ -6,7 +6,7 @@ This repository follows [berichan/PokoHex](https://github.com/berichan/PokoHex) 
 
 Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/upstream-sync-release.yml)
 
-- GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`3,13,23,33,43,53 * * * *`). GitHub may delay or skip scheduled runs, so this is best-effort polling, not a strict 10-minute SLA. Staggered minutes avoid the busiest beginning-of-hour window.
+- GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`7,17,27,37,47,57 * * * *`). GitHub may delay or skip scheduled runs, so this is best-effort polling, not a strict 10-minute SLA. Staggered minutes avoid the busiest beginning-of-hour window.
 - If upstream has commits not present locally, Actions performs a normal Git merge into this repository's `main`. It never force-pushes and never discards local changes. An unresolved merge conflict fails the job.
 - The workflow determines the upstream SHA and associated Release tag `upstream-<first 12 SHA characters>`.
 - When the tag has no Release (or lacks the Windows ZIP), it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
@@ -15,11 +15,11 @@ Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/u
 - Only after a successful build/test/package does a separate Release job with write permission download the tested artifact and create or update a GitHub Release with the ZIP. The Release is tagged at the **synced source commit** while the tag name identifies the upstream commit.
 - A release is not created on a build failure. Subsequent scheduled runs retry it automatically while the Release is missing.
 
-The workflow also runs when its own YAML file changes on `main`; this bootstraps an initial release when the automation is first installed, and validates future workflow edits. Ordinary source and documentation commits do not trigger extra builds.\n\n## Run manually
+The workflow also runs when its own YAML file changes on `main`; this bootstraps an initial Release and forces a full build/test/ZIP refresh when workflow configuration changes. Ordinary source and documentation commits do not trigger extra builds.\n\n## Run manually
 
 Open **Actions → Sync upstream and publish Windows release → Run workflow**.
 
-- **rebuild = false**: check/sync upstream, then publish only if the current upstream SHA has no Release.
+- **rebuild = false**: check/sync upstream, then publish only if the current upstream SHA has no Release or the Release lacks its ZIP.
 - **rebuild = true**: re-run build/test/package and create a missing Release or replace the ZIP asset on an existing Release. This is useful after repairing a broken CI pipeline.
 
 ## Authentication and permissions
@@ -49,3 +49,7 @@ The original upstream `windows-release.yml` and `web-pages.yml` remain separate.
 | Web not deployed | Use the separate `Web build and Pages deployment` workflow with its `deploy` input, and configure GitHub Pages first. |
 
 Remember to back up save data before using any save editor.
+
+## Scheduled-run health
+
+A successful `push` or `workflow_dispatch` run confirms that merging and publishing work, **not** that GitHub's cron scheduler works. Check the [workflow run list](https://github.com/969981/PokoHex/actions/workflows/upstream-sync-release.yml) for an `event=schedule` run. Changing the cron expression re-registers it, but GitHub can delay or omit jobs and provides no strict ten-minute SLA. If repeated windows still produce no `schedule` runs, verify the workflow is enabled and ask GitHub Support to inspect the repository's scheduled-workflow registration; a guaranteed cadence requires an independently operated scheduler.
