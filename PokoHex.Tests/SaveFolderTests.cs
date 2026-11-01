@@ -64,6 +64,25 @@ public static class SaveFolderTests
     }
 
     [Fact]
+    public static void PreserveFullSaveRootMetadata()
+    {
+        var files = GetFiles();
+        files["metadata.txt"] = [7, 8, 9];
+        var loaded = SaveFolder.ReadFiles(files);
+        var output = loaded.ExportFiles();
+        Assert.Equal(new byte[] { 7, 8, 9 }, output["metadata.txt"]);
+        Assert.False(output.ContainsKey(Path.Combine("G00", "metadata.txt")));
+    }
+
+    [Fact]
+    public static void RejectAmbiguousFlatAndNestedCommon()
+    {
+        var files = GetFiles();
+        files["CMNDAT.BIN"] = files["G00/CMNDAT.BIN"];
+        Assert.Throws<InvalidDataException>(() => SaveFolder.ReadFiles(files));
+    }
+
+    [Fact]
     public static void ImportG00OnlyFlatArchiveAndKeepUnknownFiles()
     {
         var files = GetFiles();
