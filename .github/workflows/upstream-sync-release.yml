@@ -9,6 +9,12 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/upstream-sync-release.yml'
+      - 'PokoHex/**'
+      - 'PokoHex.Core/**'
+      - 'PokoHex.Web/**'
+      - 'PokoHex.Parsing/**'
+      - 'PokoHex.Tests/**'
+      - 'PokoHex.slnx'
   workflow_dispatch:
     inputs:
       rebuild:
@@ -74,7 +80,8 @@ jobs:
 
           upstream_sha="$(git rev-parse upstream/main)"
           commit_sha="$(git rev-parse HEAD)"
-          release_tag="upstream-${upstream_sha:0:12}"
+          # Tag the tested local tree so local feature changes also create Releases.
+          release_tag="build-${commit_sha:0:12}"
           publish=false
 
           # Retry if the current revision has no Release or no usable ZIP asset.
@@ -192,9 +199,9 @@ jobs:
           asset="artifacts/PokoHex-win-x64.zip"
           test -s "$asset"
           tag="$RELEASE_TAG"
-          short="${UPSTREAM_SHA:0:12}"
+          short="${SYNC_COMMIT:0:12}"
           notes="$(cat <<EOF
-          Automated build of berichan/PokoHex.
+          Automated build of 969981/PokoHex, incorporating berichan/PokoHex updates.
 
           Upstream commit: $UPSTREAM_SHA
           Synced source commit: $SYNC_COMMIT
@@ -207,5 +214,5 @@ jobs:
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$asset" --clobber
           else
-            gh release create "$tag" "$asset" --target "$SYNC_COMMIT" --title "PokoHex upstream $short" --notes "$notes" --latest
+            gh release create "$tag" "$asset" --target "$SYNC_COMMIT" --title "PokoHex build $short" --notes "$notes" --latest
           fi
