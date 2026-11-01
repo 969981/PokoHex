@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace PokoHex.Core;
 
@@ -12,6 +13,7 @@ public sealed class SaveFolder
     private readonly Dictionary<string, byte[]> Files;
     private readonly Dictionary<int, StageSave> Stages = [];
     public int[] StageIds { get; }
+    public SavePartInfo[] SaveParts { get; }
     public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited);
 
     private SaveFolder(string folder, Dictionary<string, byte[]> files)
@@ -19,6 +21,24 @@ public sealed class SaveFolder
         Folder = folder;
         Files = files;
         Common = SaveFile.Read(files[Path.Combine("G00", "CMNDAT.BIN")]);
+        // Inventory all components, including opaque/photo candidates, without modifying their bytes.
+        SaveParts = files.Select(entry =>
+        {
+            var relative = entry.Key.Replace('\\', '/');
+            var inCommonFolder = relative.StartsWith("G00/", StringComparison.OrdinalIgnoreCase);
+            var name = Path.GetFileName(relative);
+            var isCommon = inCommonFolder && name.Equals("CMNDAT.BIN", StringComparison.OrdinalIgnoreCase);
+            var isPhoto = inCommonFolder && name.Equals("SCSHDAT.BIN", StringComparison.OrdinalIgnoreCase);
+            var isStage = inCommonFolder && name.Length == 12 && name.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase)
+                && name.EndsWith(".BIN", StringComparison.OrdinalIgnoreCase) && int.TryParse(name.AsSpan(6, 2), out _);
+            var kind = isCommon ? "Common" : isPhoto ? "SCSHDAT (unverified)" : isStage ? "Stage" : "Other";
+            var support = isCommon ? "Player / inventory / villagers"
+                : isStage ? "Limited map editing"
+                : isPhoto ? "Preserved unchanged; fields not verified"
+                : "Preserved unchanged";
+            return new SavePartInfo(relative, kind, support, entry.Value.LongLength,
+                Convert.ToHexString(SHA256.HashData(entry.Value)), isCommon || isStage);
+        }).OrderBy(x => x.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray();
         StageIds = files.Keys.Where(z => Path.GetDirectoryName(z)!.Equals("G00", StringComparison.OrdinalIgnoreCase))
             .Select(Path.GetFileName).Where(z => z!.Length == 12 && z.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase) &&
                 z.EndsWith(".BIN", StringComparison.OrdinalIgnoreCase) && int.TryParse(z.AsSpan(6, 2), out _))
@@ -40,18 +60,26 @@ public sealed class SaveFolder
     {
         path = Path.GetFullPath(path);
         if (File.Exists(path))
-            path = Directory.GetParent(Path.GetDirectoryName(path)!)!.FullName;
+            path = Path.GetDirectoryName(path)!;
         if (Path.GetFileName(path).Equals("G00", StringComparison.OrdinalIgnoreCase))
             path = Directory.GetParent(path)!.FullName;
-        if (!File.Exists(Path.Combine(path, "G00", "CMNDAT.BIN")) || !Directory.Exists(Path.Combine(path, "S00")))
-            throw new InvalidDataException("Select the save folder containing G00 and S00.");
+
+        // Accept either the full save root (G00, optionally S00) or a loose
+        // folder containing the common/stage/photo BIN files directly.
+        var nested = File.Exists(Path.Combine(path, "G00", "CMNDAT.BIN"));
+        var flat = !nested && File.Exists(Path.Combine(path, "CMNDAT.BIN"));
+        if (!nested && !flat)
+            throw new InvalidDataException("Select a save folder with G00/CMNDAT.BIN or a folder containing CMNDAT.BIN.");
 
         var files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
         foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
         {
             if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) != 0)
                 throw new IOException("Linked save files are not supported.");
-            files.Add(Path.GetRelativePath(path, file), File.ReadAllBytes(file));
+            var relative = Path.GetRelativePath(path, file);
+            if (flat)
+                relative = Path.Combine("G00", relative);
+            files.Add(relative, File.ReadAllBytes(file));
         }
         return new SaveFolder(path, files);
     }
@@ -64,12 +92,13 @@ public sealed class SaveFolder
             var parts = name.Replace('\\', '/').Split('/');
             if (parts.Any(z => z.Length == 0 || z is "." or ".." || z.Contains(':') || z.Any(char.IsControl)))
                 throw new InvalidDataException("The save contains an invalid file path.");
-            if (!files.TryAdd(Path.Combine(parts), (byte[])data.Clone()))
+            // A direct G00-only export may have CMNDAT.BIN at the archive root.
+            var relative = parts.Length == 1 ? Path.Combine("G00", parts[0]) : Path.Combine(parts);
+            if (!files.TryAdd(relative, (byte[])data.Clone()))
                 throw new InvalidDataException("The save contains duplicate file paths.");
         }
-        if (!files.ContainsKey(Path.Combine("G00", "CMNDAT.BIN")) ||
-            !files.Keys.Any(z => z.StartsWith("S00" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
-            throw new InvalidDataException("Select the save folder containing G00 and S00.");
+        if (!files.ContainsKey(Path.Combine("G00", "CMNDAT.BIN")))
+            throw new InvalidDataException("Select a save containing CMNDAT.BIN (under G00 or directly in a G00-only folder).");
         return new SaveFolder(string.Empty, files);
     }
 
