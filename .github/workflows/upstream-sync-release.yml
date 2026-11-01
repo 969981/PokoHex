@@ -3,7 +3,7 @@ name: Sync upstream and publish Windows release
 on:
   # Stagger away from minute 0; GitHub schedules can still be delayed or skipped.
   schedule:
-    - cron: '3,13,23,33,43,53 * * * *'
+    - cron: '7,17,27,37,47,57 * * * *'
   # Also run when this workflow changes, including this initial setup.
   push:
     branches: [main]
@@ -81,7 +81,9 @@ jobs:
           if ! gh release view "$release_tag" --json assets --jq '.assets[].name' 2>/dev/null | grep -Fxq 'PokoHex-win-x64.zip'; then
             publish=true
           fi
-          if [[ "$FORCE_REBUILD" == "true" ]]; then
+          # Re-registering the cron through a workflow-file push also
+          # triggers one complete rebuild, ensuring the release path is tested.
+          if [[ "$FORCE_REBUILD" == "true" || "$GITHUB_EVENT_NAME" == "push" ]]; then
             publish=true
           fi
 
@@ -90,6 +92,7 @@ jobs:
           echo "upstream_sha=$upstream_sha" >> "$GITHUB_OUTPUT"
           echo "commit_sha=$commit_sha" >> "$GITHUB_OUTPUT"
           echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+          echo "Trigger event:   $GITHUB_EVENT_NAME"
           echo "Upstream commit: $upstream_sha"
           echo "Local commit:    $commit_sha"
           echo "Source changed:  $changed"
