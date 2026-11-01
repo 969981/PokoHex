@@ -86,14 +86,19 @@ public sealed class SaveFolder
 
     public static SaveFolder ReadFiles(IEnumerable<KeyValuePair<string, byte[]>> source)
     {
+        var entries = source.ToArray();
+        var flatG00 = entries.Any(z => z.Key.Replace('\\', '/').Equals("CMNDAT.BIN", StringComparison.OrdinalIgnoreCase));
+        var nestedG00 = entries.Any(z => z.Key.Replace('\\', '/').Equals("G00/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase));
+        if (flatG00 && nestedG00)
+            throw new InvalidDataException("The save has two Common files (flat and G00).");
         var files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (name, data) in source)
+        foreach (var (name, data) in entries)
         {
             var parts = name.Replace('\\', '/').Split('/');
             if (parts.Any(z => z.Length == 0 || z is "." or ".." || z.Contains(':') || z.Any(char.IsControl)))
                 throw new InvalidDataException("The save contains an invalid file path.");
             // A direct G00-only export may have CMNDAT.BIN at the archive root.
-            var relative = parts.Length == 1 ? Path.Combine("G00", parts[0]) : Path.Combine(parts);
+            var relative = flatG00 && parts.Length == 1 ? Path.Combine("G00", parts[0]) : Path.Combine(parts);
             if (!files.TryAdd(relative, (byte[])data.Clone()))
                 throw new InvalidDataException("The save contains duplicate file paths.");
         }
