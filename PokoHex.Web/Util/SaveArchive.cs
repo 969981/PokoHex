@@ -35,12 +35,17 @@ public static class SaveArchive
     {
         var files = source.Select(z => new KeyValuePair<string, byte[]>(z.Key.Replace('\\', '/'), z.Value)).ToArray();
         ValidateSize(files.Length, files.Select(z => (long)z.Value.Length));
-        var roots = files.Where(z => z.Key.Equals("G00/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase) ||
-                z.Key.EndsWith("/G00/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase))
-            .Select(z => z.Key[..^"G00/CMNDAT.BIN".Length]).ToArray();
-        if (roots.Length != 1)
-            throw new InvalidDataException("Select one save containing G00/CMNDAT.BIN and S00.");
-        var root = roots[0];
+        // Prefer a complete save root; otherwise accept archives of just the
+        // loose G00 files (CMNDAT.BIN, SCSHDAT.BIN, STGDATxx.BIN).
+        var nested = files.Where(z => z.Key.Equals("G00/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase) ||
+            z.Key.EndsWith("/G00/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase)).ToArray();
+        var flat = files.Where(z => z.Key.Equals("CMNDAT.BIN", StringComparison.OrdinalIgnoreCase) ||
+            z.Key.EndsWith("/CMNDAT.BIN", StringComparison.OrdinalIgnoreCase)).ToArray();
+        var choices = nested.Length > 0 ? nested : flat;
+        if (choices.Length != 1)
+            throw new InvalidDataException("Select one save containing G00/CMNDAT.BIN or a G00-only set of BIN files.");
+        var suffix = nested.Length > 0 ? "G00/CMNDAT.BIN" : "CMNDAT.BIN";
+        var root = choices[0].Key[..^suffix.Length];
         if (files.Any(z => !z.Key.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidDataException("The selection contains files outside the save folder.");
         // Validate the wrapper too; it must never hide a traversal or absolute path.
