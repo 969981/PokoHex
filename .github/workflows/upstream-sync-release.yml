@@ -2,7 +2,12 @@ name: Sync upstream and publish Windows release
 
 on:
   schedule:
-    - cron: '23 * * * *'
+    - cron: '*/10 * * * *'
+  # Also run when this workflow changes, including this initial setup.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/upstream-sync-release.yml'
   workflow_dispatch:
     inputs:
       rebuild:
