@@ -163,15 +163,15 @@ jobs:
           $tag = $env:RELEASE_TAG
           $asset = "artifacts/PokoHex-win-x64.zip"
           $short = $env:UPSTREAM_SHA.Substring(0, 12)
-          $notes = @"
-          Automated build of [berichan/PokoHex](https://github.com/berichan/PokoHex) at commit `$($env:UPSTREAM_SHA)`.
-
-          - Upstream commit: `$($env:UPSTREAM_SHA)`
-          - Synced source commit: `$($env:SYNC_COMMIT)`
-          - Platform: Windows x64, self-contained .NET 10
-          - Validation: solution build and xUnit tests completed before publishing
-          - Please back up your save files before editing.
-          "@
+          $notes = @(
+            "Automated build of berichan/PokoHex."
+            ""
+            "Upstream commit: $env:UPSTREAM_SHA"
+            "Synced source commit: $env:SYNC_COMMIT"
+            "Platform: Windows x64, self-contained .NET 10"
+            "Validation: solution build and xUnit tests completed before publishing"
+            "Please back up save files before editing."
+          ) -join "`n"
 
           gh release view "$tag" *> $null
           if ($LASTEXITCODE -eq 0) {
