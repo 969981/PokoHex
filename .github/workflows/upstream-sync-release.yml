@@ -1,0 +1,182 @@
+name: Sync upstream and publish Windows release
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+    inputs:
+      rebuild:
+        description: Rebuild and republish the current upstream revision even if it is unchanged
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pokohex-upstream-release
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync upstream main
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      publish: ${{ steps.sync.outputs.publish }}
+      changed: ${{ steps.sync.outputs.changed }}
+      upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
+      commit_sha: ${{ steps.sync.outputs.commit_sha }}
+      release_tag: ${{ steps.sync.outputs.release_tag }}
+    steps:
+      - name: Check out local main with history
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream and decide whether to publish
+        id: sync
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          FORCE_REBUILD: ${{ inputs.rebuild || 'false' }}
+        run: |
+          set -euo pipefail
+          git remote add upstream https://github.com/berichan/PokoHex.git
+          git fetch upstream main --no-tags
+          git fetch origin main --no-tags
+          git checkout main
+          git reset --hard origin/main
+
+          changed=false
+          if ! git merge-base --is-ancestor upstream/main HEAD; then
+            if ! git merge-base HEAD upstream/main >/dev/null; then
+              echo "::error::Local and upstream histories are unrelated. Refusing to overwrite main."
+              exit 1
+            fi
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            # A real merge preserves local workflows and any other local changes.
+            # Merge conflicts stop the workflow rather than force-pushing.
+            git merge --no-ff --no-edit upstream/main
+            git push origin HEAD:main
+            changed=true
+          fi
+
+          upstream_sha="$(git rev-parse upstream/main)"
+          commit_sha="$(git rev-parse HEAD)"
+          release_tag="upstream-${upstream_sha:0:12}"
+          publish=false
+
+          # No published release after a failed build? Retry on the next poll.
+          if ! gh release view "$release_tag" >/dev/null 2>&1; then
+            publish=true
+          fi
+          if [[ "$FORCE_REBUILD" == "true" ]]; then
+            publish=true
+          fi
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+          echo "upstream_sha=$upstream_sha" >> "$GITHUB_OUTPUT"
+          echo "commit_sha=$commit_sha" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+          echo "Upstream commit: $upstream_sha"
+          echo "Local commit:    $commit_sha"
+          echo "Source changed:  $changed"
+          echo "Publish needed:  $publish"
+
+  windows-release:
+    name: Test, package and publish Windows x64
+    needs: sync
+    if: needs.sync.outputs.publish == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_NOLOGO: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+      SYNC_COMMIT: ${{ needs.sync.outputs.commit_sha }}
+      UPSTREAM_SHA: ${{ needs.sync.outputs.upstream_sha }}
+      RELEASE_TAG: ${{ needs.sync.outputs.release_tag }}
+
+    steps:
+      - name: Check out exact synced commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.sync.outputs.commit_sha }}
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore PokoHex.slnx
+
+      - name: Build
+        run: dotnet build PokoHex.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PokoHex.Tests/PokoHex.Tests.csproj --configuration Release --no-build --no-restore --verbosity normal
+
+      - name: Publish self-contained Windows x64
+        run: >-
+          dotnet publish PokoHex/PokoHex.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/publish
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:PublishTrimmed=false
+          -p:DebugType=None
+          -p:DebugSymbols=false
+
+      - name: Package ZIP with license
+        run: |
+          if (-not (Test-Path -LiteralPath artifacts/publish/PokoHex.exe -PathType Leaf)) {
+            throw "Expected PokoHex.exe was not generated."
+          }
+          Copy-Item -LiteralPath LICENSE.txt -Destination artifacts/publish/LICENSE.txt
+          Compress-Archive -Path artifacts/publish/* -DestinationPath artifacts/PokoHex-win-x64.zip
+
+      - name: Save build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PokoHex-win-x64
+          path: artifacts/PokoHex-win-x64.zip
+          if-no-files-found: error
+
+      - name: Publish or repair GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $tag = $env:RELEASE_TAG
+          $asset = "artifacts/PokoHex-win-x64.zip"
+          $short = $env:UPSTREAM_SHA.Substring(0, 12)
+          $notes = @"
+          Automated build of [berichan/PokoHex](https://github.com/berichan/PokoHex) at commit `$($env:UPSTREAM_SHA)`.
+
+          - Upstream commit: `$($env:UPSTREAM_SHA)`
+          - Synced source commit: `$($env:SYNC_COMMIT)`
+          - Platform: Windows x64, self-contained .NET 10
+          - Validation: solution build and xUnit tests completed before publishing
+          - Please back up your save files before editing.
+          "@
+
+          gh release view "$tag" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload "$tag" "$asset" --clobber
+          } else {
+            gh release create "$tag" "$asset" --target "$env:SYNC_COMMIT" --title "PokoHex upstream $short" --notes "$notes" --latest
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
