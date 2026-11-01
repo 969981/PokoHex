@@ -9,10 +9,10 @@ Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/u
 - GitHub Actions checks the upstream `main` branch at minute **23 of every hour (UTC)**. GitHub may delay scheduled runs.
 - If upstream has commits not present locally, Actions performs a normal Git merge into this repository's `main`. It never force-pushes and never discards local changes. An unresolved merge conflict fails the job.
 - The workflow determines the upstream SHA and associated Release tag `upstream-<first 12 SHA characters>`.
-- When the tag has no Release, it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
-- When the Release already exists for the current upstream SHA, the scheduled job exits without rebuilding.
-- The Windows build restores and compiles `PokoHex.slnx` using **.NET 10**, runs `PokoHex.Tests`, publishes a **self-contained Windows x64** app, and packs `LICENSE.txt` with the app into `PokoHex-win-x64.zip`.
-- Only after a successful build/test/package does the workflow create or update a GitHub Release with the ZIP. The Release is tagged at the **synced source commit** while the tag name identifies the upstream commit.
+- When the tag has no Release (or lacks the Windows ZIP), it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
+- When a Release with the Windows ZIP already exists for the current upstream SHA, the scheduled job exits without rebuilding.
+- A read-only Windows build job restores and compiles `PokoHex.slnx` using **.NET 10**, runs `PokoHex.Tests`, publishes a **self-contained Windows x64** app, and packs `LICENSE.txt` with the app into `PokoHex-win-x64.zip`.
+- Only after a successful build/test/package does a separate Release job with write permission download the tested artifact and create or update a GitHub Release with the ZIP. The Release is tagged at the **synced source commit** while the tag name identifies the upstream commit.
 - A release is not created on a build failure. Subsequent scheduled runs retry it automatically while the Release is missing.
 
 ## Run manually
@@ -24,7 +24,7 @@ Open **Actions → Sync upstream and publish Windows release → Run workflow**.
 
 ## Authentication and permissions
 
-The workflow uses only GitHub's built-in `GITHUB_TOKEN`; no PAT, Deploy Key, or user Secret is needed in the normal case. The job requests `contents: write` for pushing the merge and creating Releases.
+The workflow uses only GitHub's built-in `GITHUB_TOKEN`; no PAT, Deploy Key, or user Secret is needed in the normal case. The sync and Release jobs request `contents: write` for pushing the merge and creating Releases. The build/test job uses `contents: read` only, so builds of upstream code do not run with a write-capable GitHub token.
 
 If a push or Release creation fails with a permission error, check **Settings → Actions → General → Workflow permissions**, plus any branch protection/rulesets for `main`. Repository/org restrictions can prevent `GITHUB_TOKEN` writes. Do not turn on force-push to bypass protections.
 
@@ -44,7 +44,7 @@ The original upstream `windows-release.yml` and `web-pages.yml` remain separate.
 | No scheduled runs | The workflow must be on default branch `main`; scheduled tasks can be delayed, and GitHub may disable them after prolonged inactivity on public repositories. |
 | Merge conflicts | Inspect the failed `Sync upstream main` step, resolve via a normal merge/commit, then manually rerun. |
 | Push denied | Verify Actions token write permissions and `main` branch protection. |
-| Compilation or tests fail | Inspect the Windows job; no Release is published. The next poll retries if no Release exists. |
+| Compilation or tests fail | Inspect the Windows job; no Release is published. The next poll retries if the Release is missing its Windows ZIP. |
 | Release/asset upload denied | Verify `contents: write` and Actions policies; manually rerun with **rebuild** after repair. |
 | Web not deployed | Use the separate `Web build and Pages deployment` workflow with its `deploy` input, and configure GitHub Pages first. |
 
