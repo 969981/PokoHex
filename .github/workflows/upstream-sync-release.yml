@@ -71,8 +71,8 @@ jobs:
           release_tag="upstream-${upstream_sha:0:12}"
           publish=false
 
-          # No published release after a failed build? Retry on the next poll.
-          if ! gh release view "$release_tag" >/dev/null 2>&1; then
+          # Retry if the current revision has no Release or no usable ZIP asset.
+          if ! gh release view "$release_tag" --json assets --jq '.assets[].name' 2>/dev/null | grep -Fxq 'PokoHex-win-x64.zip'; then
             publish=true
           fi
           if [[ "$FORCE_REBUILD" == "true" ]]; then
@@ -89,14 +89,14 @@ jobs:
           echo "Source changed:  $changed"
           echo "Publish needed:  $publish"
 
-  windows-release:
-    name: Test, package and publish Windows x64
+  windows-build:
+    name: Test and package Windows x64
     needs: sync
     if: needs.sync.outputs.publish == 'true'
     runs-on: windows-latest
     timeout-minutes: 30
     permissions:
-      contents: write
+      contents: read
     defaults:
       run:
         shell: pwsh
@@ -155,28 +155,48 @@ jobs:
           path: artifacts/PokoHex-win-x64.zip
           if-no-files-found: error
 
-      - name: Publish or repair GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          $tag = $env:RELEASE_TAG
-          $asset = "artifacts/PokoHex-win-x64.zip"
-          $short = $env:UPSTREAM_SHA.Substring(0, 12)
-          $notes = @(
-            "Automated build of berichan/PokoHex."
-            ""
-            "Upstream commit: $env:UPSTREAM_SHA"
-            "Synced source commit: $env:SYNC_COMMIT"
-            "Platform: Windows x64, self-contained .NET 10"
-            "Validation: solution build and xUnit tests completed before publishing"
-            "Please back up save files before editing."
-          ) -join "`n"
+  release:
+    name: Publish validated ZIP to GitHub Releases
+    needs: [sync, windows-build]
+    if: needs.sync.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      SYNC_COMMIT: ${{ needs.sync.outputs.commit_sha }}
+      UPSTREAM_SHA: ${{ needs.sync.outputs.upstream_sha }}
+      RELEASE_TAG: ${{ needs.sync.outputs.release_tag }}
+    steps:
+      - name: Download tested ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: PokoHex-win-x64
+          path: artifacts
 
-          gh release view "$tag" *> $null
-          if ($LASTEXITCODE -eq 0) {
+      - name: Publish or repair GitHub Release
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset="artifacts/PokoHex-win-x64.zip"
+          test -s "$asset"
+          tag="$RELEASE_TAG"
+          short="${UPSTREAM_SHA:0:12}"
+          notes="$(cat <<EOF
+          Automated build of berichan/PokoHex.
+
+          Upstream commit: $UPSTREAM_SHA
+          Synced source commit: $SYNC_COMMIT
+          Platform: Windows x64, self-contained .NET 10
+          Validation: solution build and xUnit tests completed before publishing
+          Please back up save files before editing.
+          EOF
+          )"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$asset" --clobber
-          } else {
-            gh release create "$tag" "$asset" --target "$env:SYNC_COMMIT" --title "PokoHex upstream $short" --notes "$notes" --latest
-          }
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          else
+            gh release create "$tag" "$asset" --target "$SYNC_COMMIT" --title "PokoHex upstream $short" --notes "$notes" --latest
+          fi
