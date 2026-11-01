@@ -67,6 +67,7 @@ public partial class Main : Form
             LoadInventory();
             Editor_Villagers.LoadSave(save.Common);
             Editor_Map.LoadSave(save);
+            LoadSaveParts();
             Text = $"PokoHex / {Path.GetFileName(save.Folder)}";
             UpdateStatus();
         }
@@ -280,6 +281,7 @@ public partial class Main : Form
             SAV = SaveFolder.Read(dialog.SelectedPath);
             Editor_Villagers.LoadSave(SAV.Common);
             Editor_Map.LoadSave(SAV);
+            LoadSaveParts();
             Text = $"PokoHex / {Path.GetFileName(SAV.Folder)}";
             LoadSlot();
             L_Status.Text = $"Exported to {dialog.SelectedPath}";
@@ -289,6 +291,16 @@ public partial class Main : Form
         {
             ShowError(ex.Message);
         }
+    }
+
+    private void LoadSaveParts()
+    {
+        DGV_SaveParts.Rows.Clear();
+        if (SAV == null)
+            return;
+        foreach (var component in SAV.SaveParts)
+            DGV_SaveParts.Rows.Add(component.RelativePath, component.Kind,
+                component.SizeBytes.ToString("N0"), component.EditSupport, component.OriginalSha256);
     }
 
     private void UpdateStatus()
