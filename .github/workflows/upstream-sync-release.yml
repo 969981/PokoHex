@@ -1,8 +1,9 @@
 name: Sync upstream and publish Windows release
 
 on:
+  # Stagger away from minute 0; GitHub schedules can still be delayed or skipped.
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '3,13,23,33,43,53 * * * *'
   # Also run when this workflow changes, including this initial setup.
   push:
     branches: [main]
