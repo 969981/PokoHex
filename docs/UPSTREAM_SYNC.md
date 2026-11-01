@@ -6,7 +6,7 @@ This repository follows [berichan/PokoHex](https://github.com/berichan/PokoHex) 
 
 Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/upstream-sync-release.yml)
 
-- GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`*/10 * * * *`). GitHub may delay scheduled runs.
+- GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`3,13,23,33,43,53 * * * *`). GitHub may delay or skip scheduled runs, so this is best-effort polling, not a strict 10-minute SLA. Staggered minutes avoid the busiest beginning-of-hour window.
 - If upstream has commits not present locally, Actions performs a normal Git merge into this repository's `main`. It never force-pushes and never discards local changes. An unresolved merge conflict fails the job.
 - The workflow determines the upstream SHA and associated Release tag `upstream-<first 12 SHA characters>`.
 - When the tag has no Release (or lacks the Windows ZIP), it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
