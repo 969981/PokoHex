@@ -79,7 +79,8 @@ p { line-height: 1.6; }
 .item-choices { height: 235px; overflow: auto; background: white; border: 1px solid #aaa; margin-bottom: 8px; }
 .item-choice, .resident-row, .part-row { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 0; padding: 3px 7px; text-align: left; background: transparent; }
 .item-choice.selected, .resident-row.selected, .part-row.selected { background: #cce8ff; }
-.resident-row { min-height: 46px; }
+.resident-row { height: 46px; }
+.resident-row > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .resident-row .sprite { width: 40px; height: 40px; }
 .resident-row small { margin-left: 6px; }
 .list-status { padding: 8px 0; color: #666; }

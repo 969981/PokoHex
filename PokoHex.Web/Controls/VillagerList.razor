@@ -1,0 +1,24 @@
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+<div class="resident-list" role="listbox" aria-label="Villagers">
+    <Virtualize Items="Entries" Context="villager" ItemSize="46">
+        <button @key="villager.Index" class="resident-row @(SelectedVillager == villager.Index ? "selected" : "")" role="option" aria-selected="@(SelectedVillager == villager.Index)" @onclick="() => SelectedVillagerChanged.InvokeAsync(villager.Index)">
+            <Sprite Source="@SpriteUtil.GetVillager(villager.Index)" /><span title="@SpriteUtil.GetVillagerName(villager.Index)">@SpriteUtil.GetVillagerName(villager.Index) <small>(@villager.Index.ToString("D4"))</small></span>
+        </button>
+    </Virtualize>
+    @if (Entries.Length == 0)
+    {
+        <p class="empty-state">No matching villagers.</p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Villager[] Entries { get; set; } = [];
+    [Parameter] public int SelectedVillager { get; set; }
+    [Parameter] public int Language { get; set; }
+    [Parameter] public EventCallback<int> SelectedVillagerChanged { get; set; }
+    private (Villager[] Entries, int Selected, GameStrings Strings)? LastRender;
+    private (Villager[], int, GameStrings) GetRenderState() => (Entries, SelectedVillager, GameInfo.Strings);
+    protected override bool ShouldRender() => LastRender != GetRenderState();
+    protected override void OnAfterRender(bool firstRender) => LastRender = GetRenderState();
+}

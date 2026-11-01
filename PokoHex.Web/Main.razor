@@ -41,7 +41,7 @@
         }
         else
         {
-            <div @key="SAV" class="editors" @onchange="Controls_Changed" @onclick="Controls_Changed" @onmousedown="Controls_Changed">
+            <div @key="SAV" class="editors" @onchange="Controls_Changed" @onclick="Controls_Changed">
                 <section hidden="@(SelectedTab != "Player")" class="player-editor">
                     <fieldset><legend>Player</legend>
                         <label for="player-name">Name:</label>
@@ -49,11 +49,11 @@
                         <p class="muted">Up to 24 UTF-8 bytes. Matching name entries are updated together.</p>
                     </fieldset>
                 </section>
-                <section hidden="@(SelectedTab != "Items")"><InventoryEditor @ref="Editor_Items" SAV="SAV.Common" Language="Language" Error="ShowError" Changed="Controls_Changed" /></section>
-                <section hidden="@(SelectedTab != "Villagers")"><VillagerEditor @ref="Editor_Villagers" SAV="SAV.Common" Language="Language" Error="ShowError" Changed="Controls_Changed" /></section>
+                <section hidden="@(SelectedTab != "Items")"><InventoryEditor @ref="Editor_Items" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Items")" Error="ShowError" Changed="Controls_Changed" /></section>
+                <section hidden="@(SelectedTab != "Villagers")"><VillagerEditor @ref="Editor_Villagers" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Villagers")" Error="ShowError" Changed="Controls_Changed" /></section>
                 @if (MapOpened)
                 {
-                    <section hidden="@(SelectedTab != "Map")"><MapEditor @ref="Editor_Map" SAV="SAV" Language="Language" Error="ShowError" Changed="Controls_Changed" /></section>
+                    <section hidden="@(SelectedTab != "Map")"><MapEditor @ref="Editor_Map" SAV="SAV" Language="Language" Active="@(SelectedTab == "Map")" Error="ShowError" Changed="Controls_Changed" /></section>
                 }
             </div>
         }

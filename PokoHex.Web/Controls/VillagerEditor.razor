@@ -7,8 +7,8 @@ else
     <div class="split villager-editor">
         <div class="list-pane">
             <div class="filterbar">
-                <input type="search" aria-label="Search villagers" placeholder="Search name or resident ID" value="@Search" @oninput="TB_Search_Changed" />
-                <select aria-label="Villager home area" value="@Area" @onchange="CB_Area_Changed">
+                <input type="search" aria-label="Search villagers" placeholder="Search name or resident ID" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
+                <select aria-label="Villager home area" @bind:get="Area" @bind:set="CB_Area_Changed">
                     <option value="-1">All areas</option>
                     @foreach (var area in Areas)
                     {
@@ -16,19 +16,8 @@ else
                     }
                 </select>
             </div>
-            <div class="resident-list" role="listbox" aria-label="Villagers">
-                @foreach (var villager in Entries)
-                {
-                    <button class="resident-row @(SelectedVillager == villager.Index ? "selected" : "")" role="option" aria-selected="@(SelectedVillager == villager.Index)" @onclick="() => SelectVillager(villager.Index)">
-                        <Sprite Source="@SpriteUtil.GetVillager(villager.Index)" /><span>@SpriteUtil.GetVillagerName(villager.Index) <small>(@villager.Index.ToString("D4"))</small></span>
-                    </button>
-                }
-                @if (Entries.Length == 0)
-                {
-                    <p class="empty-state">No matching villagers.</p>
-                }
-            </div>
-            <div class="list-status">@Entries.Length of @SAV.Villagers.Count(z => !z.IsEmpty) villagers</div>
+            <VillagerList Entries="Entries" SelectedVillager="SelectedVillager" Language="Language" SelectedVillagerChanged="SelectVillager" />
+            <div class="list-status">@Entries.Length of @TotalVillagers villagers</div>
         </div>
         <fieldset class="details" disabled="@(SelectedVillager < 0)"><legend>@(Selected == null ? "Villager" : SpriteUtil.GetVillagerName(SelectedVillager))</legend>
             @if (Selected is { } resident)

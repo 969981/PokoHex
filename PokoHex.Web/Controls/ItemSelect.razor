@@ -4,7 +4,7 @@
     <div class="item-choices" role="listbox" aria-label="Items">
         @foreach (var item in Filtered)
         {
-            <button type="button" class="item-choice @(item.Value == Value ? "selected" : "")" role="option" aria-selected="@(item.Value == Value)" @onclick="() => ValueChanged.InvokeAsync(item.Value)">
+            <button @key="item.Value" type="button" class="item-choice @(item.Value == Value ? "selected" : "")" role="option" aria-selected="@(item.Value == Value)" @onclick="() => ValueChanged.InvokeAsync(item.Value)">
                 <Sprite Source="@SpriteUtil.GetItem(item.Value)" /><span>@item.Display</span>
             </button>
         }
@@ -23,8 +23,48 @@
     [Parameter] public int Language { get; set; }
     private int PreviousLanguage = -1;
     private string Search = string.Empty;
-    private ItemInfo? Selected => Choices.FirstOrDefault(z => z.Value == Value);
-    private ItemInfo[] Filtered => Choices.Where(z => z.Display.Contains(Search, StringComparison.CurrentCultureIgnoreCase)).Take(80).ToArray();
+    private ItemInfo[]? SearchChoices;
+    private string[] SearchLabels = [];
+    private (ItemInfo[] Choices, string Search)? FilterState;
+    private ItemInfo[] Matches = [];
+    private (ItemInfo[] Choices, ushort Value)? SelectionState;
+    private ItemInfo? SelectedItem;
+    private (ItemInfo[] Choices, ushort Value, string Search, int Language)? LastRender;
+    private (ItemInfo[], ushort, string, int) GetRenderState() => (Choices, Value, Search, Language);
+    protected override bool ShouldRender() => LastRender != GetRenderState();
+    protected override void OnAfterRender(bool firstRender) => LastRender = GetRenderState();
+
+    private ItemInfo? Selected
+    {
+        get
+        {
+            var state = (Choices, Value);
+            if (SelectionState != state)
+            {
+                SelectedItem = Choices.FirstOrDefault(z => z.Value == Value);
+                SelectionState = state;
+            }
+            return SelectedItem;
+        }
+    }
+
+    private ItemInfo[] Filtered
+    {
+        get
+        {
+            var state = (Choices, Search);
+            if (FilterState == state)
+                return Matches;
+            if (SearchChoices != Choices)
+            {
+                SearchLabels = Choices.Select(z => z.Display).ToArray();
+                SearchChoices = Choices;
+            }
+            Matches = Choices.Where((_, i) => SearchLabels[i].Contains(Search, StringComparison.CurrentCultureIgnoreCase)).Take(80).ToArray();
+            FilterState = state;
+            return Matches;
+        }
+    }
 
     protected override void OnParametersSet()
     {

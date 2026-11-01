@@ -29,8 +29,15 @@ public partial class Main : IAsyncDisposable
     private int Language;
     private bool Busy;
     private bool MapOpened;
-    private bool HasChanges => SAV != null && (SAV.IsEdited || PlayerName != SAV.Common.PlayerName ||
-        Editor_Items?.HasChanges == true || Editor_Villagers?.HasChanges == true || Editor_Map?.HasChanges == true);
+    private bool? BrowserDirty;
+    private RenderState? LastRender;
+    private readonly record struct RenderState(SaveFolder? Save, string Name, string SaveName, string Tab,
+        string Status, string Error, int Language, bool Busy, bool MapOpened, bool Dirty);
+    private bool HasChanges => SAV != null && (PlayerName != SAV.Common.PlayerName ||
+        Editor_Items?.HasChanges == true || Editor_Villagers?.HasChanges == true || Editor_Map?.HasChanges == true || SAV.IsEdited);
+
+    private RenderState GetRenderState() => new(SAV, PlayerName, SaveName, SelectedTab, Status, Error, Language, Busy, MapOpened, HasChanges);
+    protected override bool ShouldRender() => LastRender != GetRenderState();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,7 +46,13 @@ public partial class Main : IAsyncDisposable
             DropReference = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("pokohexDrop.initialize", EditorWindow, DropReference, SaveArchive.MaximumFiles);
         }
-        await JS.InvokeVoidAsync("pokohex.setDirty", HasChanges);
+        var state = GetRenderState();
+        LastRender = state;
+        if (BrowserDirty != state.Dirty)
+        {
+            await JS.InvokeVoidAsync("pokohex.setDirty", state.Dirty);
+            BrowserDirty = state.Dirty;
+        }
     }
 
     [JSInvokable]

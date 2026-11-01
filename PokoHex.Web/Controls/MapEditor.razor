@@ -3,7 +3,7 @@
 
 <div class="map-editor">
     <div class="filterbar map-toolbar">
-        <label>Area:<select value="@Area" @onchange="CB_Area_Changed" disabled="@Loading">
+        <label>Area:<select @bind:get="Area" @bind:set="CB_Area_Changed" disabled="@Loading">
             @foreach (var area in SAV.StageIds)
             {
                 <option value="@area">@SpriteUtil.GetAreaName(area)</option>
@@ -42,7 +42,7 @@
                         var bounds = GetVisibleBounds(part);
                         var rect = GetRectangle(bounds);
                         var size = Math.Min(36, Math.Min(rect.Width, rect.Height));
-                        <g><title>@PartText(part)</title><rect x="@rect.X" y="@rect.Z" width="@rect.Width" height="@rect.Height" fill="@(part.Info.CanEdit ? "#b0c4de99" : "#d3d3d399")" stroke="#888" />
+                        <g @key="part.Index"><title>@PartText(part)</title><rect x="@rect.X" y="@rect.Z" width="@rect.Width" height="@rect.Height" fill="@(part.Info.CanEdit ? "#b0c4de99" : "#d3d3d399")" stroke="#888" />
                             @if (SpriteUtil.GetItem(part.Info.ItemId) is { } image)
                             {
                                 <image href="@image" x="@(rect.X + (rect.Width - size) / 2)" y="@(rect.Z + (rect.Height - size) / 2)" width="@size" height="@size" />
@@ -64,7 +64,7 @@
                 <p class="muted">Blue: selected. Green/red: pending footprint.</p>
             </div>
             <div class="map-sidebar">
-                <input type="search" aria-label="Search placed objects" placeholder="Search name, coordinates or #index" value="@Search" @oninput="TB_Search_Changed" />
+                <input type="search" aria-label="Search placed objects" placeholder="Search name, coordinates or #index" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
                 <div class="part-list" role="listbox" aria-label="Placed objects">
                     <Virtualize Items="Entries" Context="part" ItemSize="38">
                         <button class="part-row @(SelectedPart == part ? "selected" : "")" role="option" aria-selected="@(SelectedPart == part)" @onclick="() => SelectPart(part)"><Sprite Source="@SpriteUtil.GetItem(part.Info.ItemId)" /><span>@PartText(part)</span></button>
@@ -76,7 +76,7 @@
                     <fieldset class="map-details"><legend>Selected object</legend>
                         <div class="item-preview"><Sprite Source="@SpriteUtil.GetItem(MapPartInfo.Get(Variation).ItemId)" /><strong>@SpriteUtil.GetItemName(MapPartInfo.Get(Variation).ItemId)</strong></div>
                         <label for="map-item">Replacement:</label>
-                        <select id="map-item" @bind="Variation" disabled="@(!detailPart.Info.CanEdit)">
+                        <select @key="GameInfo.Strings" id="map-item" @bind="Variation" disabled="@(!detailPart.Info.CanEdit)">
                             @foreach (var choice in Choices)
                             {
                                 <option value="@choice.Value">@SpriteUtil.GetItemName(choice.ItemId) (@choice.Value.ToString("D4"))</option>

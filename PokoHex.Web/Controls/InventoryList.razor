@@ -1,0 +1,27 @@
+<div class="table-scroll">
+    <table class="inventory"><thead><tr><th>Slot</th><th></th><th>Item</th><th>Count</th></tr></thead><tbody>
+        @for (int i = 0; i < Count; i++)
+        {
+            var slot = Start + i;
+            var item = SAV.Inventory[slot];
+            <tr @key="slot" class="@(SelectedSlot == slot ? "selected" : "")" aria-selected="@(SelectedSlot == slot)">
+                <td>@(i + 1)</td><td><Sprite Source="@SpriteUtil.GetItem(item.ItemId)" /></td>
+                <td><button class="row-button" @onclick="() => SelectedSlotChanged.InvokeAsync(slot)">@SpriteUtil.GetItemName(item.ItemId)</button></td><td>@item.Count</td>
+            </tr>
+        }
+    </tbody></table>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public SaveFile SAV { get; set; } = null!;
+    [Parameter] public int Start { get; set; }
+    [Parameter] public int SelectedSlot { get; set; }
+    [Parameter] public int Revision { get; set; }
+    [Parameter] public int Language { get; set; }
+    [Parameter] public EventCallback<int> SelectedSlotChanged { get; set; }
+    private (SaveFile Save, int Start, int Slot, int Revision, GameStrings Strings)? LastRender;
+    private int Count => Start == 0 ? SaveLayout.MainInventoryCount : SAV.Inventory.Length - Start;
+    private (SaveFile, int, int, int, GameStrings) GetRenderState() => (SAV, Start, SelectedSlot, Revision, GameInfo.Strings);
+    protected override bool ShouldRender() => LastRender != GetRenderState();
+    protected override void OnAfterRender(bool firstRender) => LastRender = GetRenderState();
+}
