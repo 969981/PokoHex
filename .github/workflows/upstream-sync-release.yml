@@ -9,7 +9,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/upstream-sync-release.yml'
-      - 'PokoHex.Tests/**'
       - 'PokoHex/**'
       - 'PokoHex.Core/**'
       - 'PokoHex.Web/**'
@@ -197,6 +196,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # A newer push can land while Windows is compiling. Releasing an older
+          # SHA whose workflow files differ from main can fail with HTTP 403
+          # (GITHUB_TOKEN lacks workflow-write permission). Never publish stale bytes.
+          current_main="$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq '.object.sha')"
+          if [[ "$current_main" != "$SYNC_COMMIT" ]]; then
+            echo "::notice::Skipped outdated build $SYNC_COMMIT; main is now $current_main."
+            exit 0
+          fi
           asset="artifacts/PokoHex-win-x64.zip"
           test -s "$asset"
           tag="$RELEASE_TAG"
