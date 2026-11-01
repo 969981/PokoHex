@@ -6,7 +6,7 @@ This repository follows [berichan/PokoHex](https://github.com/berichan/PokoHex) 
 
 Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/upstream-sync-release.yml)
 
-- GitHub Actions checks the upstream `main` branch at minute **23 of every hour (UTC)**. GitHub may delay scheduled runs.
+- GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`*/10 * * * *`). GitHub may delay scheduled runs.
 - If upstream has commits not present locally, Actions performs a normal Git merge into this repository's `main`. It never force-pushes and never discards local changes. An unresolved merge conflict fails the job.
 - The workflow determines the upstream SHA and associated Release tag `upstream-<first 12 SHA characters>`.
 - When the tag has no Release (or lacks the Windows ZIP), it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
@@ -15,7 +15,7 @@ Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/u
 - Only after a successful build/test/package does a separate Release job with write permission download the tested artifact and create or update a GitHub Release with the ZIP. The Release is tagged at the **synced source commit** while the tag name identifies the upstream commit.
 - A release is not created on a build failure. Subsequent scheduled runs retry it automatically while the Release is missing.
 
-## Run manually
+The workflow also runs when its own YAML file changes on `main`; this bootstraps an initial release when the automation is first installed, and validates future workflow edits. Ordinary source and documentation commits do not trigger extra builds.\n\n## Run manually
 
 Open **Actions → Sync upstream and publish Windows release → Run workflow**.
 
