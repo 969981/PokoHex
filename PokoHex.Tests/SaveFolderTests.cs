@@ -33,18 +33,31 @@ public static class SaveFolderTests
         Assert.Equal(source["G00/SCSHDAT.BIN"], reopened.ExportFiles()[Path.Combine("G00", "SCSHDAT.BIN")]);
     }
 
-    [Fact]
-    public static void RejectInvalidImportedPaths()
+    [Theory]
+    [InlineData("../file")]
+    [InlineData("/file")]
+    [InlineData("G00/../file")]
+    [InlineData("C:/file")]
+    [InlineData("G00//file")]
+    [InlineData("G00/./file")]
+    public static void RejectInvalidImportedPath(string path)
     {
-        foreach (var path in new[] { "../file", "/file", "G00/../file", "C:/file", "G00//file", "G00/./file" })
-        {
-            var files = GetFiles();
-            files.Add(path, []);
-            Assert.Throws<InvalidDataException>(() => SaveFolder.ReadFiles(files));
-        }
+        var files = GetFiles();
+        files.Add(path, []);
+        Assert.Throws<InvalidDataException>(() => SaveFolder.ReadFiles(files));
+    }
+
+    [Fact]
+    public static void RejectDuplicateImportedPaths()
+    {
         var duplicate = GetFiles();
         duplicate.Add("g00\\cmndat.bin", duplicate["G00/CMNDAT.BIN"]);
         Assert.Throws<InvalidDataException>(() => SaveFolder.ReadFiles(duplicate));
+    }
+
+    [Fact]
+    public static void RejectMissingCommonFile()
+    {
         var missing = GetFiles();
         missing.Remove("G00/CMNDAT.BIN");
         Assert.Throws<InvalidDataException>(() => SaveFolder.ReadFiles(missing));
