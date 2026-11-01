@@ -35,7 +35,7 @@
         {
             <div class="welcome">
                 <h1>PokoHex Save Editor</h1>
-                <p>Open or drag in the save folder containing <strong>G00</strong> and <strong>S00</strong>, or a ZIP of that folder.</p>
+                <p>Open a save root containing <strong>G00</strong> (and optionally <strong>S00</strong>), a folder of loose <strong>G00 BIN</strong> files, or a ZIP.</p>
                 <p class="muted">Everything happens locally. Your save files stay in your browser. Export downloads a ZIP; your original files are never overwritten but keep backups!</p>
             </div>
         }
@@ -55,6 +55,29 @@
                 {
                     <section hidden="@(SelectedTab != "Map")"><MapEditor @ref="Editor_Map" SAV="SAV" Language="Language" Active="@(SelectedTab == "Map")" Error="ShowError" Changed="Controls_Changed" /></section>
                 }
+                <section hidden="@(SelectedTab != "Files")" class="files-editor">
+                    <fieldset>
+                        <legend>Save files (original import)</legend>
+                        <p class="muted">Common/player and compatible stage maps can be edited in their respective tabs.
+                            SCSHDAT.BIN is recognized but its Pokopia format is unverified, so it is retained byte-for-byte.
+                            SHA-256 values below describe the original imported files, before pending edits.</p>
+                        <table>
+                            <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Support</th><th>Original SHA-256</th></tr></thead>
+                            <tbody>
+                                @foreach (var part in SAV.SaveParts)
+                                {
+                                    <tr>
+                                        <td>@part.RelativePath</td>
+                                        <td>@part.Kind</td>
+                                        <td>@part.SizeBytes.ToString("N0") B</td>
+                                        <td>@part.EditSupport</td>
+                                        <td style="overflow-wrap:anywhere"><code>@part.OriginalSha256</code></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </section>
             </div>
         }
     </section>
