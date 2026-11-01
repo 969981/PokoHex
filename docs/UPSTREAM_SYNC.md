@@ -8,18 +8,18 @@ Workflow: [`.github/workflows/upstream-sync-release.yml`](../.github/workflows/u
 
 - GitHub Actions checks the upstream `main` branch **every 10 minutes (UTC)** (`7,17,27,37,47,57 * * * *`). GitHub may delay or skip scheduled runs, so this is best-effort polling, not a strict 10-minute SLA. Staggered minutes avoid the busiest beginning-of-hour window.
 - If upstream has commits not present locally, Actions performs a normal Git merge into this repository's `main`. It never force-pushes and never discards local changes. An unresolved merge conflict fails the job.
-- The workflow determines the upstream SHA and associated Release tag `upstream-<first 12 SHA characters>`.
+- The workflow determines both the upstream SHA and the exact synchronized local commit. The Release tag is `build-<first 12 characters of local commit SHA>`, so local feature changes also receive distinct releases.
 - When the tag has no Release (or lacks the Windows ZIP), it builds the synchronized source. This includes an initial baseline Release and automatic retries of previously failed builds.
-- When a Release with the Windows ZIP already exists for the current upstream SHA, the scheduled job exits without rebuilding.
+- When a Release with the Windows ZIP already exists for the current synchronized local commit, the scheduled job exits without rebuilding.
 - A read-only Windows build job restores and compiles `PokoHex.slnx` using **.NET 10**, runs `PokoHex.Tests`, publishes a **self-contained Windows x64** app, and packs `LICENSE.txt` with the app into `PokoHex-win-x64.zip`.
-- Only after a successful build/test/package does a separate Release job with write permission download the tested artifact and create or update a GitHub Release with the ZIP. The Release is tagged at the **synced source commit** while the tag name identifies the upstream commit.
+- Only after a successful build/test/package does a separate Release job with write permission download the tested artifact and create or update a GitHub Release with the ZIP. The Release is tagged at the **synced local source commit** and documents both local and upstream SHA values.
 - A release is not created on a build failure. Subsequent scheduled runs retry it automatically while the Release is missing.
 
-The workflow also runs when its own YAML file changes on `main`; this bootstraps an initial Release and forces a full build/test/ZIP refresh when workflow configuration changes. Ordinary source and documentation commits do not trigger extra builds.\n\n## Run manually
+The workflow also runs when its own YAML file changes on `main`; this bootstraps an initial Release and forces a full build/test/ZIP refresh when workflow configuration changes. Local changes to project source or tests also trigger builds; documentation-only commits do not.\n\n## Run manually
 
 Open **Actions → Sync upstream and publish Windows release → Run workflow**.
 
-- **rebuild = false**: check/sync upstream, then publish only if the current upstream SHA has no Release or the Release lacks its ZIP.
+- **rebuild = false**: check/sync upstream, then publish only if the synchronized local SHA has no Release or the Release lacks its ZIP.
 - **rebuild = true**: re-run build/test/package and create a missing Release or replace the ZIP asset on an existing Release. This is useful after repairing a broken CI pipeline.
 
 ## Authentication and permissions
@@ -35,7 +35,7 @@ The original upstream `windows-release.yml` and `web-pages.yml` remain separate.
 - **Windows**: `PokoHex-win-x64.zip` in this repository's Releases; .NET runtime bundled.
 - **Web**: the existing Blazor WebAssembly workflow builds a static site and can deploy to GitHub Pages manually when Pages is configured. It is not auto-deployed by the upstream sync workflow.
 - **macOS/Linux**: no native desktop package, since the desktop project uses WinForms (`net10.0-windows`).
-- **Version tag**: `upstream-<SHA12>` avoids version collisions with the upstream's human-assigned releases such as `0.2.0`. Each published Release documents both the upstream SHA and the merged local source SHA.
+- **Version tag**: `build-<local SHA12>` uniquely tracks the exact local build, including upstream merges and local edits. Historical `upstream-<SHA12>` Releases remain available. Each Release documents both the upstream SHA and merged local source SHA.
 
 ## Troubleshooting
 
@@ -45,7 +45,7 @@ The original upstream `windows-release.yml` and `web-pages.yml` remain separate.
 | Merge conflicts | Inspect the failed `Sync upstream main` step, resolve via a normal merge/commit, then manually rerun. |
 | Push denied | Verify Actions token write permissions and `main` branch protection. |
 | Compilation or tests fail | Inspect the Windows job; no Release is published. The next poll retries if the Release is missing its Windows ZIP. |
-| Release/asset upload denied | Verify `contents: write` and Actions policies; manually rerun with **rebuild** after repair. |
+| Release/asset upload denied | Verify `contents: write` and Actions policies. GitHub can also reject a Release targeting a stale commit with differing workflow files; the job now checks that `main` still equals the built commit before publishing. A subsequent push rebuilds the latest revision. |
 | Web not deployed | Use the separate `Web build and Pages deployment` workflow with its `deploy` input, and configure GitHub Pages first. |
 
 Remember to back up save data before using any save editor.
