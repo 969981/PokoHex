@@ -2,7 +2,7 @@
 
 <PageTitle>PokoHex@(SAV == null ? "" : $" / {SaveName}")</PageTitle>
 <main @ref="EditorWindow" class="application" aria-busy="@Busy">
-    <header class="titlebar"><strong>PokoHex</strong><span>Save Editor</span><span class="edition">Web</span></header>
+    <header class="titlebar"><strong>PokoHex</strong><span>Save Editor</span><a class="edition" href="https://github.com/berichan/PokoHex" target="_blank" rel="noopener noreferrer">Source</a></header>
     <div class="menubar">
         <label class="file-button" aria-disabled="@Busy">Open save folder…
             <InputFile id="open-folder" OnChange="OpenFolder" webkitdirectory="" multiple disabled="@Busy" />
@@ -43,11 +43,16 @@
         {
             <div @key="SAV" class="editors" @onchange="Controls_Changed" @onclick="Controls_Changed">
                 <section hidden="@(SelectedTab != "Player")" class="player-editor">
-                    <fieldset><legend>Player</legend>
-                        <label for="player-name">Name:</label>
+                    <div class="player-header">
+                        <label for="player-name">Player name:</label>
                         <input id="player-name" @bind="PlayerName" @bind:event="oninput" />
-                        <p class="muted">Up to 24 UTF-8 bytes. Matching name entries are updated together.</p>
-                    </fieldset>
+                        <div class="player-sections" role="group" aria-label="Player editor">
+                            <button aria-pressed="@(PlayerSection == "Skills")" @onclick='() => PlayerSection = "Skills"'>Skills</button>
+                            <button aria-pressed="@(PlayerSection == "Reactions")" @onclick='() => PlayerSection = "Reactions"'>Reactions</button>
+                        </div>
+                    </div>
+                    <section hidden="@(PlayerSection != "Skills")"><AbilityEditor @ref="Editor_Skills" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Player" && PlayerSection == "Skills")" Error="ShowError" Changed="Controls_Changed" /></section>
+                    <section hidden="@(PlayerSection != "Reactions")"><AbilityEditor @ref="Editor_Reactions" SAV="SAV.Common" Reactions="true" Language="Language" Active="@(SelectedTab == "Player" && PlayerSection == "Reactions")" Error="ShowError" Changed="Controls_Changed" /></section>
                 </section>
                 <section hidden="@(SelectedTab != "Items")"><InventoryEditor @ref="Editor_Items" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Items")" Error="ShowError" Changed="Controls_Changed" /></section>
                 <section hidden="@(SelectedTab != "Villagers")"><VillagerEditor @ref="Editor_Villagers" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Villagers")" Error="ShowError" Changed="Controls_Changed" /></section>

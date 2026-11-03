@@ -4,6 +4,9 @@ namespace PokoHex.Web;
 
 public static class SpriteUtil
 {
+    public static string? GetSkill(int index) => Skill.IsPublic(index) ? $"images/skills/skill_{index:D4}.png" : null;
+    public static string? GetReaction(int index) => Reaction.IsPublic(index) ? $"images/reactions/reaction_{index:D4}.png" : null;
+
     public static string? GetItem(ushort id)
     {
         if (id == 0)

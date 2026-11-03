@@ -1,0 +1,48 @@
+@if (Abilities == null)
+{
+    <p class="empty-state">Skills and reactions aren’t available for this save version.</p>
+}
+else
+{
+    <div class="split ability-editor">
+        <div class="list-pane">
+            <div class="table-scroll">
+                <table class="inventory">
+                    <thead><tr><th>@(Reactions ? "Reaction" : "Move")</th><th>Learned</th>@if (!Reactions) { <th>Uses</th> }</tr></thead>
+                    <tbody>
+                        @foreach (var entry in Entries)
+                        {
+                            <tr class="@(SelectedAbility == entry.Value ? "selected" : "")">
+                                <td><button class="row-button" aria-pressed="@(SelectedAbility == entry.Value)" @onclick="() => SelectedAbility = entry.Value"><Sprite Source="@(Reactions ? SpriteUtil.GetReaction(entry.Value) : SpriteUtil.GetSkill(entry.Value))" />@entry.Text</button></td>
+                                <td>@(IsLearned(entry.Value) ? "Yes" : "No")</td>
+                                @if (!Reactions) { <td>@Abilities.Skills[entry.Value].Uses</td> }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="buttons">
+                <button @onclick="() => LearnAbilities(false)" disabled="@(SelectedAbility == 0 || IsLearned(SelectedAbility))">Learn</button>
+                <button @onclick="() => LearnAbilities(true)" disabled="@(LearnedCount == Entries.Length)">Learn all</button>
+            </div>
+            <div class="list-status">@LearnedCount of @Entries.Length @(Reactions ? "reactions" : "moves") learned</div>
+        </div>
+        <fieldset class="details"><legend>@(Reactions ? "Reaction wheel order" : "Skill wheel order")</legend>
+            <label for="@WheelId">Slot:</label>
+            <select id="@WheelId" class="wheel-slots" size="8" @bind:get="SelectedSlot" @bind:set="LB_Wheel_Changed">
+                @for (int i = 0; i < WheelCount; i++)
+                {
+                    <option value="@i">@(i + 1): @GetName(GetSlot(i))</option>
+                }
+            </select>
+            <label for="@(WheelId + "-ability")">@(Reactions ? "Reaction:" : "Move:")</label>
+            <select id="@(WheelId + "-ability")" @bind="WheelAbility" @bind:after="NotifyChanged">
+                @foreach (var entry in Choices)
+                {
+                    <option value="@entry.Value">@entry.Text</option>
+                }
+            </select>
+            <div class="buttons"><button class="primary" @onclick="B_Set_Click" disabled="@(!HasChanges)">Set</button></div>
+        </fieldset>
+    </div>
+}
