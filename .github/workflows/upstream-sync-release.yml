@@ -73,7 +73,14 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             # A real merge preserves local workflows and any other local changes.
             # Merge conflicts stop the workflow rather than force-pushing.
-            git merge --no-ff --no-edit upstream/main
+            if ! git merge --no-ff --no-edit upstream/main; then
+              # Only the verified Files-tab vs Skills/Reactions conflict is resolved.
+              # All other conflicts are intentionally fatal to avoid losing features.
+              python3 .github/scripts/resolve-known-pokohex-merge.py
+              git add -- PokoHex/Main.cs PokoHex/Main.Designer.cs
+              git diff --cached --check -- PokoHex/Main.cs PokoHex/Main.Designer.cs
+              git commit --no-edit
+            fi
             git push origin HEAD:main
             changed=true
           fi
