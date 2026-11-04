@@ -33,18 +33,18 @@ def splice(s: str, old: str, new: str) -> str:
 
 def load_stage(path: str, stage: int) -> str:
     raw = subprocess.check_output(["git", "show", f":{stage}:{path}"])
-    if not raw.startswith(b"\\xef\\xbb\\xbf"):
+    if not raw.startswith(b"\xef\xbb\xbf"):
         raise RuntimeError(f"Unexpected encoding/BOM for {path}, stage {stage}")
     return raw.decode("utf-8-sig")
 
 
 def resolve_main(up: str) -> str:
-    up = splice(up, "            Editor_Map.LoadSave(save);\\n",
-                "            Editor_Map.LoadSave(save);\\n            LoadSaveParts();\\n")
-    up = splice(up, "            Editor_Map.LoadSave(SAV);\\n",
-                "            Editor_Map.LoadSave(SAV);\\n            LoadSaveParts();\\n")
-    up = splice(up, "    private void UpdateStatus()\\n",
-                "    private void LoadSaveParts()\n    {\n        DGV_SaveParts.Rows.Clear();\n        if (SAV == null)\n            return;\n        foreach (var component in SAV.SaveParts)\n            DGV_SaveParts.Rows.Add(component.RelativePath, component.Kind,\n                component.SizeBytes.ToString(\"N0\"), component.EditSupport, component.OriginalSha256);\n    }\n\n" + "    private void UpdateStatus()\\n")
+    up = splice(up, "            Editor_Map.LoadSave(save);\n",
+                "            Editor_Map.LoadSave(save);\n            LoadSaveParts();\n")
+    up = splice(up, "            Editor_Map.LoadSave(SAV);\n",
+                "            Editor_Map.LoadSave(SAV);\n            LoadSaveParts();\n")
+    up = splice(up, "    private void UpdateStatus()\n",
+                "    private void LoadSaveParts()\n    {\n        DGV_SaveParts.Rows.Clear();\n        if (SAV == null)\n            return;\n        foreach (var component in SAV.SaveParts)\n            DGV_SaveParts.Rows.Add(component.RelativePath, component.Kind,\n                component.SizeBytes.ToString(\"N0\"), component.EditSupport, component.OriginalSha256);\n    }\n\n" + "    private void UpdateStatus()\n")
     for anchor in ("Editor_Skills.SaveChanges();", "Editor_Reactions.SaveChanges();",
                    "LoadSaveParts();", "private void LoadSaveParts()"):
         if anchor not in up:
@@ -53,16 +53,16 @@ def resolve_main(up: str) -> str:
 
 
 def resolve_designer(up: str) -> str:
-    up = splice(up, '        var map = new TabPage("Map");\\n',
-                '        var map = new TabPage("Map");\\n'
-                '        var files = new TabPage("Files");\\n'
-                '        DGV_SaveParts = new DataGridView();\\n')
-    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map]);\\n",
-                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, files]);\\n"
+    up = splice(up, '        var map = new TabPage("Map");\n',
+                '        var map = new TabPage("Map");\n'
+                '        var files = new TabPage("Files");\n'
+                '        DGV_SaveParts = new DataGridView();\n')
+    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map]);\n",
+                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, files]);\n"
                 + "        DGV_SaveParts.Dock = DockStyle.Fill;\n        DGV_SaveParts.ReadOnly = true;\n        DGV_SaveParts.AllowUserToAddRows = false;\n        DGV_SaveParts.AllowUserToDeleteRows = false;\n        DGV_SaveParts.AllowUserToResizeRows = false;\n        DGV_SaveParts.RowHeadersVisible = false;\n        DGV_SaveParts.SelectionMode = DataGridViewSelectionMode.FullRowSelect;\n        DGV_SaveParts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;\n        DGV_SaveParts.BackgroundColor = SystemColors.Window;\n        DGV_SaveParts.Columns.Add(\"Path\", \"Path\");\n        DGV_SaveParts.Columns.Add(\"Kind\", \"Type\");\n        DGV_SaveParts.Columns.Add(\"Bytes\", \"Bytes\");\n        DGV_SaveParts.Columns.Add(\"Support\", \"Edit support\");\n        DGV_SaveParts.Columns.Add(\"Hash\", \"Original SHA-256\");\n        files.Controls.Add(DGV_SaveParts);\n")
-    up = splice(up, "    private DataGridView DGV_Items = null!;\\n",
-                "    private DataGridView DGV_Items = null!;\\n"
-                "    private DataGridView DGV_SaveParts = null!;\\n")
+    up = splice(up, "    private DataGridView DGV_Items = null!;\n",
+                "    private DataGridView DGV_Items = null!;\n"
+                "    private DataGridView DGV_SaveParts = null!;\n")
     for anchor in ("Editor_Skills = new AbilityEditor", "Editor_Reactions = new AbilityEditor",
                    "DGV_SaveParts.ReadOnly = true", "files.Controls.Add(DGV_SaveParts)"):
         if anchor not in up:
@@ -73,7 +73,7 @@ def resolve_designer(up: str) -> str:
 def main() -> None:
     unresolved = set(subprocess.check_output(
         ["git", "diff", "--name-only", "--diff-filter=U", "-z"]
-    ).decode().strip("\\0").split("\\0"))
+    ).decode().strip("\0").split("\0"))
     if unresolved != set(FILES):
         raise RuntimeError(f"Refusing unknown conflicts: {sorted(unresolved)}")
     for path, (ours_expected, theirs_expected) in FILES.items():
@@ -89,7 +89,7 @@ def main() -> None:
         merged = resolve_main(upstream) if path.endswith("/Main.cs") else resolve_designer(upstream)
         if any(marker in merged for marker in ("<<<<<<<", ">>>>>>>")):
             raise RuntimeError(f"Conflict marker in {path}")
-        Path(path).write_bytes(b"\\xef\\xbb\\xbf" + merged.encode("utf-8"))
+        Path(path).write_bytes(b"\xef\xbb\xbf" + merged.encode("utf-8"))
         print(f"Resolved {path}: Files inspector + upstream Skills/Reactions")
     print("Verified known-only conflict resolution. Git staging and commit happen in the workflow.")
 
