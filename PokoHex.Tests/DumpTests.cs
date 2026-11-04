@@ -10,6 +10,58 @@ namespace PokoHex.Tests;
 public static class DumpTests
 {
     [Fact]
+    public static void ReadArchiveEntries()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        using var archive = new GameArchive(GameItemDumper.GetArchiveFolder(path!));
+        Assert.SkipUnless(archive.EntryCount == 12298, "These archive samples use the update game dump.");
+        Assert.Empty(archive.Read(5595));
+        Assert.Empty(archive.Read(10062));
+        Assert.Empty(archive.Read(11596));
+        Assert.Equal(568, archive.Read(5918).Length);
+        Assert.Equal(1_863_044, archive.Read(5907).Length);
+        Assert.Equal(34_480_304, archive.Read(5879).Length);
+        Assert.Equal(Convert.FromHexString("0000000000000000010000000100DD010000"), archive.Read(10022));
+        var mixed = archive.Read(10220);
+        Assert.Equal(65550, mixed.Length);
+        Assert.Equal(Convert.FromHexString("0000050085010000050085010000"), mixed.AsSpan(mixed.Length - 14).ToArray());
+    }
+
+    [Fact]
+    public static void ReadAbilityTables()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var strings = GameInfo.GetStrings(language);
+            Assert.Equal(GameAbilityDumper.GetSkillList(path!, language), strings.skilllist);
+            Assert.Equal(GameAbilityDumper.GetReactionList(path!, language), strings.reactionlist);
+            Assert.Equal(10, strings.SkillDataSource.Length);
+            Assert.Equal(47, strings.ReactionDataSource.Length);
+        }
+    }
+
+    [Fact]
+    public static void DumpAbilityResources()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        var destination = Environment.GetEnvironmentVariable("POKOHEX_RESOURCE_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        Assert.SkipUnless(!string.IsNullOrWhiteSpace(destination), "Set POKOHEX_RESOURCE_PATH to the resource output folder.");
+        GameAbilityDumper.UpdateDumps(path!, destination!);
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var folder = Path.Combine(destination!, "text", language);
+            Assert.Equal(GameAbilityDumper.GetSkillList(path!, language), File.ReadAllLines(Path.Combine(folder, $"text_skill_{language}.txt")));
+            Assert.Equal(GameAbilityDumper.GetReactionList(path!, language), File.ReadAllLines(Path.Combine(folder, $"text_reaction_{language}.txt")));
+        }
+    }
+
+    [Fact]
     public static void ReadMapParts()
     {
         var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");

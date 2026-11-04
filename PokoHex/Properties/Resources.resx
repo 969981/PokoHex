@@ -6097,4 +6097,175 @@
   <data name="villager_0378" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Villager\villager_0378.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="skill_0001" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0001.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0002" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0002.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0003" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0003.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0004" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0004.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0005" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0005.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0006" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0006.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0010" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0010.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0011.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0012" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0012.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="skill_0013" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill\skill_0013.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0006" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0006.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0007" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0007.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0008" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0008.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0009" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0009.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0010" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0010.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0011.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0012" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0012.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0013" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0013.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0014" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0014.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0015" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0015.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0016" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0016.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0017" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0017.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0018" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0018.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0019" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0019.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0020" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0020.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0021" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0021.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0022" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0022.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0023" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0023.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0024" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0024.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0025" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0025.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0026" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0026.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0027" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0027.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0028" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0028.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0029" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0029.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0030" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0030.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0031" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0031.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0032" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0032.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0033" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0033.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0034" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0034.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0035" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0035.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0036" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0036.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0037" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0037.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0038" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0038.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0039" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0039.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0040" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0040.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0041" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0041.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0042" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0042.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0043" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0043.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0044" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0044.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0045" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0045.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0083" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0083.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0084" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0084.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0085" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0085.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0086" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0086.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0087" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0087.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0093" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0093.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reaction_0095" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Reaction\reaction_0095.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

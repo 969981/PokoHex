@@ -43,14 +43,19 @@ p { line-height: 1.6; }
 .file-button:focus-within { outline: 2px solid #0078d4; }
 .language { display: flex; gap: 8px; align-items: center; margin-left: auto; }
 .language select { min-width: 130px; }
-.tabs { display: flex; align-items: end; padding: 12px 10px 0; border-bottom: 1px solid #aaa; }
+.tabs { display: flex; flex-wrap: wrap; align-items: end; padding: 12px 10px 0; border-bottom: 1px solid #aaa; }
 .tabs button { border-radius: 3px 3px 0 0; border: 1px solid #bbb; margin-right: 2px; padding: 7px 20px; }
 .tabs button.active { background: #fafafa; border-bottom-color: #fafafa; position: relative; top: 1px; }
 .workspace { background: #fafafa; min-height: 630px; padding: 16px; }
 [hidden] { display: none !important; }
 .welcome { max-width: 680px; margin: 100px auto; padding: 0 24px; }
-.player-editor fieldset { max-width: 620px; margin: 12px; }
-.player-editor input { margin-top: 8px; width: 260px; max-width: 100%; }
+.player-header { display: grid; grid-template-columns: max-content minmax(0, 244px); align-items: center; gap: 12px; margin-bottom: 18px; }
+.player-header input { width: 244px; max-width: 100%; min-width: 0; }
+.player-sections { display: flex; grid-column: 2; }
+.player-sections button { min-width: 116px; padding: 7px 18px; border-radius: 0; }
+.player-sections button:first-child { border-radius: 3px 0 0 3px; }
+.player-sections button:last-child { border-radius: 0 3px 3px 0; margin-left: -1px; }
+.player-sections button[aria-pressed="true"] { position: relative; background: #cce8ff; border-color: #0078d4; color: #005a9e; }
 .split { display: grid; grid-template-columns: minmax(320px, 1fr) 340px; gap: 18px; min-height: 580px; }
 .list-pane { min-width: 0; display: flex; flex-direction: column; }
 .filterbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -66,6 +71,11 @@ p { line-height: 1.6; }
 .selected, .inventory tr.selected { background: #cce8ff; color: #111; }
 .row-button { display: block; width: 100%; text-align: left; padding: 6px 0; border: 0; border-radius: 0; background: transparent; }
 .row-button:hover { background: transparent; }
+.ability-editor .inventory th:first-child { width: auto; }
+.ability-editor .row-button { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+.ability-editor .inventory th:nth-child(2), .ability-editor .inventory th:last-child { width: 85px; }
+.ability-editor .details select { width: 100%; }
+.wheel-slots option { padding: 5px 7px; }
 .sprite { display: inline-block; width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; vertical-align: middle; }
 .details { align-self: start; }
 .details > label { margin: 14px 0 6px; }
@@ -131,6 +141,9 @@ dt, dd { margin: 0; }
     .part-list { height: 380px; }
 }
 @media (max-width: 620px) {
+    .player-header { grid-template-columns: max-content minmax(0, 1fr); }
+    .player-sections { grid-column: 1 / -1; width: 100%; }
+    .player-sections button { flex: 1; }
     .workspace { padding: 10px; }
     .split { grid-template-columns: 1fr; }
     .table-scroll, .resident-list { height: 330px; }

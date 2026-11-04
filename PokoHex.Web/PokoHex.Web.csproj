@@ -13,9 +13,13 @@
     <ItemGroup>
       <ItemSprite Include="..\PokoHex\Resources\MenuIcon\*.png" />
       <VillagerSprite Include="..\PokoHex\Resources\Villager\*.png" />
+      <SkillSprite Include="..\PokoHex\Resources\Skill\*.png" />
+      <ReactionSprite Include="..\PokoHex\Resources\Reaction\*.png" />
     </ItemGroup>
     <Copy SourceFiles="@(ItemSprite)" DestinationFiles="@(ItemSprite->'wwwroot\images\items\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(VillagerSprite)" DestinationFiles="@(VillagerSprite->'wwwroot\images\villagers\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SkillSprite)" DestinationFiles="@(SkillSprite->'wwwroot\images\skills\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ReactionSprite)" DestinationFiles="@(ReactionSprite->'wwwroot\images\reactions\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <ItemGroup>
       <Content Include="wwwroot\images\**\*.png" Exclude="@(Content)" />
       <Content Update="wwwroot\images\**\*.png" CopyToOutputDirectory="PreserveNewest" />

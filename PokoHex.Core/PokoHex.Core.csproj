@@ -3,6 +3,42 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\text\en\text_skill_en.txt" />
+    <EmbeddedResource Include="Resources\text\en\text_skill_en.txt" />
+    <None Remove="Resources\text\en\text_reaction_en.txt" />
+    <EmbeddedResource Include="Resources\text\en\text_reaction_en.txt" />
+    <None Remove="Resources\text\jp\text_skill_jp.txt" />
+    <EmbeddedResource Include="Resources\text\jp\text_skill_jp.txt" />
+    <None Remove="Resources\text\jp\text_reaction_jp.txt" />
+    <EmbeddedResource Include="Resources\text\jp\text_reaction_jp.txt" />
+    <None Remove="Resources\text\de\text_skill_de.txt" />
+    <EmbeddedResource Include="Resources\text\de\text_skill_de.txt" />
+    <None Remove="Resources\text\de\text_reaction_de.txt" />
+    <EmbeddedResource Include="Resources\text\de\text_reaction_de.txt" />
+    <None Remove="Resources\text\es\text_skill_es.txt" />
+    <EmbeddedResource Include="Resources\text\es\text_skill_es.txt" />
+    <None Remove="Resources\text\es\text_reaction_es.txt" />
+    <EmbeddedResource Include="Resources\text\es\text_reaction_es.txt" />
+    <None Remove="Resources\text\fr\text_skill_fr.txt" />
+    <EmbeddedResource Include="Resources\text\fr\text_skill_fr.txt" />
+    <None Remove="Resources\text\fr\text_reaction_fr.txt" />
+    <EmbeddedResource Include="Resources\text\fr\text_reaction_fr.txt" />
+    <None Remove="Resources\text\it\text_skill_it.txt" />
+    <EmbeddedResource Include="Resources\text\it\text_skill_it.txt" />
+    <None Remove="Resources\text\it\text_reaction_it.txt" />
+    <EmbeddedResource Include="Resources\text\it\text_reaction_it.txt" />
+    <None Remove="Resources\text\ko\text_skill_ko.txt" />
+    <EmbeddedResource Include="Resources\text\ko\text_skill_ko.txt" />
+    <None Remove="Resources\text\ko\text_reaction_ko.txt" />
+    <EmbeddedResource Include="Resources\text\ko\text_reaction_ko.txt" />
+    <None Remove="Resources\text\zhs\text_skill_zhs.txt" />
+    <EmbeddedResource Include="Resources\text\zhs\text_skill_zhs.txt" />
+    <None Remove="Resources\text\zhs\text_reaction_zhs.txt" />
+    <EmbeddedResource Include="Resources\text\zhs\text_reaction_zhs.txt" />
+    <None Remove="Resources\text\zht\text_skill_zht.txt" />
+    <EmbeddedResource Include="Resources\text\zht\text_skill_zht.txt" />
+    <None Remove="Resources\text\zht\text_reaction_zht.txt" />
+    <EmbeddedResource Include="Resources\text\zht\text_reaction_zht.txt" />
     <None Remove="Resources\byte\map_parts.bin" />
     <EmbeddedResource Include="Resources\byte\map_parts.bin" />
     <None Remove="Resources\byte\item_menuicon.bin" />
