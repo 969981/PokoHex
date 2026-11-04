@@ -76,6 +76,7 @@ jobs:
             if ! git merge --no-ff --no-edit upstream/main; then
               # Only the verified Files-tab vs Skills/Reactions conflict is resolved.
               # All other conflicts are intentionally fatal to avoid losing features.
+              # The resolver compares both unmerged Git index blob SHAs and fails closed.
               python3 .github/scripts/resolve-known-pokohex-merge.py
               git add -- PokoHex/Main.cs PokoHex/Main.Designer.cs
               git diff --cached --check -- PokoHex/Main.cs PokoHex/Main.Designer.cs
