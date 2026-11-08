@@ -75,6 +75,8 @@ p { line-height: 1.6; }
 .ability-editor .row-button { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
 .ability-editor .inventory th:nth-child(2), .ability-editor .inventory th:last-child { width: 85px; }
 .ability-editor .details select { width: 100%; }
+.flag-editor .inventory th:nth-child(2) { width: auto; }
+.flag-editor .inventory th:last-child { width: 85px; }
 .wheel-slots option { padding: 5px 7px; }
 .sprite { display: inline-block; width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; vertical-align: middle; }
 .details { align-self: start; }

@@ -12,16 +12,62 @@ public sealed class PlayerAbilities
     public const int SIZE = SkillCount * Skill.SIZE + SkillWheelCount + ReactionCount + ReactionWheelCount * 2;
     private readonly Memory<byte> SkillWheel;
     private readonly Memory<byte> ReactionWheel;
+    private readonly Memory<byte> FunctionFlags;
     public Skill[] Skills { get; }
     public Reaction[] Reactions { get; }
 
-    internal PlayerAbilities(Memory<byte> raw)
+    internal PlayerAbilities(Memory<byte> raw, Memory<byte> functionFlags)
     {
+        FunctionFlags = functionFlags;
         Skills = Enumerable.Range(0, SkillCount).Select(i => new Skill(i, raw.Slice(i * Skill.SIZE, Skill.SIZE))).ToArray();
         SkillWheel = raw.Slice(SkillCount * Skill.SIZE, SkillWheelCount);
         var reactions = SkillCount * Skill.SIZE + SkillWheelCount;
         Reactions = Enumerable.Range(0, ReactionCount).Select(i => new Reaction(i, raw.Slice(reactions + i, 1))).ToArray();
         ReactionWheel = raw.Slice(reactions + ReactionCount, ReactionWheelCount * 2);
+    }
+
+    public bool RockSmashFoodUnlocked => (FunctionFlags.Span[9] & 4) != 0 && (FunctionFlags.Span[15] & 32) != 0;
+
+    public void UnlockRockSmashFood()
+    {
+        if (!Skills[4].Learned)
+            throw new ArgumentException("Learn Rock Smash first.");
+        // Food availability (74) and the extra effect (125) are separate flags.
+        FunctionFlags.Span[9] |= 4;
+        FunctionFlags.Span[15] |= 32;
+    }
+
+    public bool IsFoodBoostUnlocked(int index) => index switch
+    {
+        1 => (FunctionFlags.Span[8] & 128) != 0,
+        3 => (FunctionFlags.Span[9] & 2) != 0,
+        4 => RockSmashFoodUnlocked,
+        5 => (FunctionFlags.Span[9] & 1) != 0,
+        _ => false,
+    };
+
+    public void UnlockFoodBoost(int index)
+    {
+        if (index is not (1 or 3 or 4 or 5))
+            throw new ArgumentOutOfRangeException(nameof(index), "Choose a move with a food boost.");
+        if (!Skills[index].Learned)
+            throw new ArgumentException("Learn the move first.");
+        switch (index)
+        {
+            case 1: FunctionFlags.Span[8] |= 128; break;
+            case 3: FunctionFlags.Span[9] |= 2; break;
+            case 4: UnlockRockSmashFood(); break;
+            case 5: FunctionFlags.Span[9] |= 1; break;
+        }
+    }
+
+    public bool LiquidAbsorptionUnlocked => (FunctionFlags.Span[6] & 64) != 0;
+
+    public void UnlockLiquidAbsorption()
+    {
+        if (!Skills[3].Learned)
+            throw new ArgumentException("Learn Water Gun first.");
+        FunctionFlags.Span[6] |= 64;
     }
 
     public void LearnSkill(int index)

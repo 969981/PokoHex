@@ -13,12 +13,13 @@ namespace PokoHex.Web;
 
 public partial class Main : IAsyncDisposable
 {
-    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map"];
+    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags"];
     private static readonly string[] LanguageNames = ["English", "日本語", "Deutsch", "Español", "Français", "Italiano", "한국어", "简体中文", "繁體中文"];
     private SaveFolder? SAV;
     private InventoryEditor? Editor_Items;
     private VillagerEditor? Editor_Villagers;
     private MapEditor? Editor_Map;
+    private FlagEditor? Editor_Flags;
     private AbilityEditor? Editor_Skills;
     private AbilityEditor? Editor_Reactions;
     private ElementReference EditorWindow;
@@ -38,7 +39,7 @@ public partial class Main : IAsyncDisposable
         string Status, string Error, int Language, bool Busy, bool MapOpened, bool Dirty);
     private bool HasChanges => SAV != null && (PlayerName != SAV.Common.PlayerName ||
         Editor_Items?.HasChanges == true || Editor_Villagers?.HasChanges == true || Editor_Map?.HasChanges == true ||
-        Editor_Skills?.HasChanges == true || Editor_Reactions?.HasChanges == true || SAV.IsEdited);
+        Editor_Skills?.HasChanges == true || Editor_Reactions?.HasChanges == true || Editor_Flags?.HasChanges == true || SAV.IsEdited);
 
     private RenderState GetRenderState() => new(SAV, PlayerName, SaveName, SelectedTab, PlayerSection, Status, Error, Language, Busy, MapOpened, HasChanges);
     protected override bool ShouldRender() => LastRender != GetRenderState();
@@ -120,6 +121,7 @@ public partial class Main : IAsyncDisposable
         Editor_Map = null;
         Editor_Skills = null;
         Editor_Reactions = null;
+        Editor_Flags = null;
         MapOpened = false;
         SelectedTab = "Player";
         PlayerSection = "Skills";
@@ -143,6 +145,7 @@ public partial class Main : IAsyncDisposable
             Editor_Villagers?.SaveChanges();
             Editor_Skills?.SaveChanges();
             Editor_Reactions?.SaveChanges();
+            Editor_Flags?.SaveChanges();
             if (PlayerName != SAV.Common.PlayerName)
                 SAV.Common.PlayerName = PlayerName;
             var files = SAV.ExportFiles();
@@ -161,8 +164,13 @@ public partial class Main : IAsyncDisposable
 
     private void SelectTab(string tab)
     {
-        SelectedTab = tab;
-        MapOpened |= tab == "Map";
+        try
+        {
+            Editor_Flags?.SaveChanges();
+            SelectedTab = tab;
+            MapOpened |= tab == "Map";
+        }
+        catch (ArgumentException ex) { ShowError(ex.Message); }
     }
 
     private void Menu_Language_Changed(ChangeEventArgs e)

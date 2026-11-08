@@ -27,7 +27,7 @@ public partial class Main : Form
         }
     }
 
-    private bool HasChanges => SAV != null && (SAV.IsEdited || TB_Name.Text != SAV.Common.PlayerName || HasSlotChanges || Editor_Villagers.HasChanges || Editor_Map.HasChanges || Editor_Skills.HasChanges || Editor_Reactions.HasChanges);
+    private bool HasChanges => SAV != null && (SAV.IsEdited || TB_Name.Text != SAV.Common.PlayerName || HasSlotChanges || Editor_Villagers.HasChanges || Editor_Map.HasChanges || Editor_Skills.HasChanges || Editor_Reactions.HasChanges || Editor_Flags.HasChanges);
 
     private bool HasSlotChanges
     {
@@ -69,6 +69,7 @@ public partial class Main : Form
             Editor_Map.LoadSave(save);
             Editor_Skills.LoadSave(save.Common);
             Editor_Reactions.LoadSave(save.Common);
+            Editor_Flags.LoadSave(save.Common);
             RB_Skills.Checked = true;
             Text = $"PokoHex / {Path.GetFileName(save.Folder)}";
             UpdateStatus();
@@ -139,6 +140,7 @@ public partial class Main : Form
         Editor_Map.RefreshLanguage();
         Editor_Skills.RefreshLanguage();
         Editor_Reactions.RefreshLanguage();
+        Editor_Flags.RefreshLanguage();
         Items = GameInfo.Strings.ItemDataSource;
         BindItems();
         Loading = true;
@@ -284,6 +286,7 @@ public partial class Main : Form
             Editor_Map.SaveChanges();
             Editor_Skills.SaveChanges();
             Editor_Reactions.SaveChanges();
+            Editor_Flags.SaveChanges();
             if (TB_Name.Text != SAV.Common.PlayerName)
                 SAV.Common.PlayerName = TB_Name.Text;
             using var dialog = new FolderBrowserDialog { Description = "Select a new, empty folder for the edited save", UseDescriptionForTitle = true };
@@ -295,6 +298,7 @@ public partial class Main : Form
             Editor_Map.LoadSave(SAV);
             Editor_Skills.LoadSave(SAV.Common);
             Editor_Reactions.LoadSave(SAV.Common);
+            Editor_Flags.LoadSave(SAV.Common);
             Text = $"PokoHex / {Path.GetFileName(SAV.Folder)}";
             LoadSlot();
             L_Status.Text = $"Exported to {dialog.SelectedPath}";
@@ -304,6 +308,15 @@ public partial class Main : Form
         {
             ShowError(ex.Message);
         }
+    }
+
+    private void TC_Editor_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (Loading || SAV == null)
+            return;
+        Editor_Flags.RefreshValues();
+        Editor_Skills.RefreshValues();
+        Editor_Reactions.RefreshValues();
     }
 
     private void UpdateStatus()

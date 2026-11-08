@@ -24,6 +24,14 @@ else
             <div class="buttons">
                 <button @onclick="() => LearnAbilities(false)" disabled="@(SelectedAbility == 0 || IsLearned(SelectedAbility))">Learn</button>
                 <button @onclick="() => LearnAbilities(true)" disabled="@(LearnedCount == Entries.Length)">Learn all</button>
+                @if (!Reactions && SelectedAbility is 1 or 3 or 4 or 5)
+                {
+                    <button @onclick="B_UnlockFood_Click" disabled="@(!Abilities.Skills[SelectedAbility].Learned || Abilities.IsFoodBoostUnlocked(SelectedAbility))">@(Abilities.IsFoodBoostUnlocked(SelectedAbility) ? "Food boost unlocked" : "Unlock food boost")</button>
+                }
+                @if (!Reactions && SelectedAbility == 3)
+                {
+                    <button @onclick="B_UnlockAbsorption_Click" disabled="@(!Abilities.Skills[3].Learned || Abilities.LiquidAbsorptionUnlocked)">@(Abilities.LiquidAbsorptionUnlocked ? "Absorption unlocked" : "Unlock absorption")</button>
+                }
             </div>
             <div class="list-status">@LearnedCount of @Entries.Length @(Reactions ? "reactions" : "moves") learned</div>
         </div>

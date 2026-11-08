@@ -129,4 +129,34 @@ public partial class AbilityEditor
         }
         catch (ArgumentException ex) { Error(ex.Message); }
     }
+
+    private async Task B_UnlockAbsorption_Click()
+    {
+        if (Reactions || Abilities == null || SelectedAbility != 3 || !Abilities.Skills[3].Learned)
+            return;
+        try
+        {
+            SaveChanges();
+            Abilities.UnlockLiquidAbsorption();
+            WheelAbility = GetSlot(SelectedSlot);
+            LoadChoices();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
+
+    private async Task B_UnlockFood_Click()
+    {
+        if (Reactions || Abilities == null || SelectedAbility is not (1 or 3 or 4 or 5) || !Abilities.Skills[SelectedAbility].Learned)
+            return;
+        try
+        {
+            SaveChanges();
+            Abilities.UnlockFoodBoost(SelectedAbility);
+            WheelAbility = GetSlot(SelectedSlot);
+            LoadChoices();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
 }
