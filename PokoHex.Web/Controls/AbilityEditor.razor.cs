@@ -30,7 +30,7 @@ public partial class AbilityEditor
     protected override bool ShouldRender() => Active;
     private Task NotifyChanged() => Changed.InvokeAsync();
     private byte GetSlot(int slot) => Reactions ? Abilities!.GetReactionSlot(slot) : Abilities!.GetSkillSlot(slot);
-    private bool IsLearned(int index) => Reactions ? Abilities!.Reactions[index].Learned : Abilities!.Skills[index].Learned;
+    private bool IsLearned(int index) => Reactions ? Abilities!.Reactions[index].Learned : Abilities!.IsSkillLearned(index);
     private string GetName(byte index) => index == 0 ? "(Empty)" : Entries.FirstOrDefault(z => z.Value == index)?.Text ?? $"Saved {(Reactions ? "reaction" : "move")} {index}";
 
     protected override void OnParametersSet()

@@ -70,10 +70,22 @@ public sealed class PlayerAbilities
         FunctionFlags.Span[6] |= 64;
     }
 
+    public bool IsSkillLearned(int index) => Skill.IsPublic(index) && Skills[index].Learned && (index switch
+    {
+        10 => (FunctionFlags.Span[7] & 1) != 0,
+        11 => (FunctionFlags.Span[7] & 2) != 0,
+        _ => true,
+    });
+
     public void LearnSkill(int index)
     {
         if (!Skill.IsPublic(index))
             throw new ArgumentOutOfRangeException(nameof(index), "Choose a move from the list.");
+        // Surf and Glide also need their separate permission flags.
+        if (index == 10)
+            FunctionFlags.Span[7] |= 1;
+        else if (index == 11)
+            FunctionFlags.Span[7] |= 2;
         if (Skills[index].Learned)
             return;
         Skills[index].Learn();

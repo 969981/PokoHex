@@ -14,7 +14,7 @@ public partial class AbilityEditor : UserControl
     private AbilityInfo[] Entries => Reactions ? GameInfo.Strings.ReactionDataSource : GameInfo.Strings.SkillDataSource;
     private int WheelCount => Reactions ? PlayerAbilities.ReactionWheelCount : PlayerAbilities.SkillWheelCount;
     private byte GetSlot(int slot) => Reactions ? SAV!.GetReactionSlot(slot) : SAV!.GetSkillSlot(slot);
-    private bool IsLearned(int index) => Reactions ? SAV!.Reactions[index].Learned : SAV!.Skills[index].Learned;
+    private bool IsLearned(int index) => Reactions ? SAV!.Reactions[index].Learned : SAV!.IsSkillLearned(index);
     public bool HasChanges => SAV != null && SelectedSlot >= 0 && CB_WheelAbility.SelectedItem is AbilityInfo entry && entry.Value != GetSlot(SelectedSlot);
 
     public AbilityEditor() => InitializeComponent();
@@ -58,7 +58,15 @@ public partial class AbilityEditor : UserControl
         UpdateSelection();
     }
 
-    public void RefreshValues() => UpdateSelection();
+    public void RefreshValues()
+    {
+        if (SAV != null)
+        {
+            foreach (DataGridViewRow row in DGV_Abilities.Rows)
+                row.Cells[2].Value = IsLearned(((AbilityInfo)row.Tag!).Value);
+        }
+        UpdateSelection();
+    }
 
     private void UpdateSelection()
     {
