@@ -39,8 +39,9 @@ def splice(s: str, old: str, new: str) -> str:
 
 def load_stage(path: str, stage: int) -> str:
     raw = subprocess.check_output(["git", "show", f":{stage}:{path}"])
-    if not raw.startswith(b"\xef\xbb\xbf"):
-        raise RuntimeError(f"Unexpected encoding/BOM for {path}, stage {stage}")
+    if path.startswith("PokoHex/") and not raw.startswith(b"\xef\xbb\xbf"):
+        raise RuntimeError(f"Unexpected WinForms encoding/BOM for {path}, stage {stage}")
+    # Upstream Web files use plain UTF-8; WinForms files retain UTF-8 BOM.
     return raw.decode("utf-8-sig")
 
 
@@ -114,7 +115,8 @@ def main() -> None:
             raise RuntimeError(f"Unexpected merge file: {path}")
         if any(marker in merged for marker in ("<<<<<<<", ">>>>>>>")):
             raise RuntimeError(f"Conflict marker in {path}")
-        Path(path).write_bytes(b"\xef\xbb\xbf" + merged.encode("utf-8"))
+        prefix = b"\xef\xbb\xbf" if path.startswith("PokoHex/") else b""
+        Path(path).write_bytes(prefix + merged.encode("utf-8"))
         print(f"Resolved {path}: local Files inspector + upstream Flags/Skills/Reactions")
     print("Verified known-only conflict resolution. Git staging and commit happen in the workflow.")
 
