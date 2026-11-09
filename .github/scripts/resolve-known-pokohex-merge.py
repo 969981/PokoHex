@@ -10,13 +10,19 @@ import subprocess
 import sys
 
 FILES = {
+    # Reviewed November 9 conflict: local read-only Files inspector vs
+    # upstream new Flags editor. Exact stage SHA pairs fail closed on changes.
     "PokoHex/Main.cs": (
-        "91172dd3b1e0f13a9f9855d5cf5e318b45a9ecf9",
-        "d234365796c97104b2bccf642faa71f856221454",
+        "480b17b300ce592b9f67b4f7d88482b65c18bb63",
+        "d7116a7fb102ed8c2c43da4836cc6c05d1b3fc50",
     ),
     "PokoHex/Main.Designer.cs": (
-        "c432711433d73f9a90fb42577a45e2aadcff443d",
-        "834a7e04e9411003c4e1b4dd75d6c691302b2e51",
+        "0cff5bbf2bb3c34105732a89844089f62b3cfd1a",
+        "d748b873df86bfb7dd9bf4a0a2ac33717be28a09",
+    ),
+    "PokoHex.Web/Main.razor.cs": (
+        "acf750c11fe67fbd581d0fbf2b2aee63848e565e",
+        "4460f59f50c5f1376da9055dd1787845d196ef6b",
     ),
 }
 
@@ -53,20 +59,32 @@ def resolve_main(up: str) -> str:
 
 
 def resolve_designer(up: str) -> str:
-    up = splice(up, '        var map = new TabPage("Map");\n',
-                '        var map = new TabPage("Map");\n'
+    up = splice(up, '        var flags = new TabPage("Flags");\n',
+                '        var flags = new TabPage("Flags");\n'
                 '        var files = new TabPage("Files");\n'
                 '        DGV_SaveParts = new DataGridView();\n')
-    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map]);\n",
-                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, files]);\n"
+    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags]);\n",
+                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, files]);\n"
                 + "        DGV_SaveParts.Dock = DockStyle.Fill;\n        DGV_SaveParts.ReadOnly = true;\n        DGV_SaveParts.AllowUserToAddRows = false;\n        DGV_SaveParts.AllowUserToDeleteRows = false;\n        DGV_SaveParts.AllowUserToResizeRows = false;\n        DGV_SaveParts.RowHeadersVisible = false;\n        DGV_SaveParts.SelectionMode = DataGridViewSelectionMode.FullRowSelect;\n        DGV_SaveParts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;\n        DGV_SaveParts.BackgroundColor = SystemColors.Window;\n        DGV_SaveParts.Columns.Add(\"Path\", \"Path\");\n        DGV_SaveParts.Columns.Add(\"Kind\", \"Type\");\n        DGV_SaveParts.Columns.Add(\"Bytes\", \"Bytes\");\n        DGV_SaveParts.Columns.Add(\"Support\", \"Edit support\");\n        DGV_SaveParts.Columns.Add(\"Hash\", \"Original SHA-256\");\n        files.Controls.Add(DGV_SaveParts);\n")
     up = splice(up, "    private DataGridView DGV_Items = null!;\n",
                 "    private DataGridView DGV_Items = null!;\n"
                 "    private DataGridView DGV_SaveParts = null!;\n")
-    for anchor in ("Editor_Skills = new AbilityEditor", "Editor_Reactions = new AbilityEditor",
+    for anchor in ("Editor_Flags = new FlagEditor", "flags.Controls.Add(Editor_Flags)",
+                   "Editor_Skills = new AbilityEditor", "Editor_Reactions = new AbilityEditor",
                    "DGV_SaveParts.ReadOnly = true", "files.Controls.Add(DGV_SaveParts)"):
         if anchor not in up:
             raise RuntimeError(f"Missing merged Designer feature: {anchor}")
+    return up
+
+
+def resolve_web(up: str) -> str:
+    up = splice(up,
+                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags"];\n',
+                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Files"];\n')
+    for anchor in ('private FlagEditor? Editor_Flags;', 'Editor_Flags?.SaveChanges();',
+                   '"Flags", "Files"'):
+        if anchor not in up:
+            raise RuntimeError(f"Missing merged web feature: {anchor}")
     return up
 
 
@@ -86,11 +104,18 @@ def main() -> None:
 
     for path in FILES:
         upstream = load_stage(path, 3)
-        merged = resolve_main(upstream) if path.endswith("/Main.cs") else resolve_designer(upstream)
+        if path == "PokoHex/Main.cs":
+            merged = resolve_main(upstream)
+        elif path == "PokoHex/Main.Designer.cs":
+            merged = resolve_designer(upstream)
+        elif path == "PokoHex.Web/Main.razor.cs":
+            merged = resolve_web(upstream)
+        else:
+            raise RuntimeError(f"Unexpected merge file: {path}")
         if any(marker in merged for marker in ("<<<<<<<", ">>>>>>>")):
             raise RuntimeError(f"Conflict marker in {path}")
         Path(path).write_bytes(b"\xef\xbb\xbf" + merged.encode("utf-8"))
-        print(f"Resolved {path}: Files inspector + upstream Skills/Reactions")
+        print(f"Resolved {path}: local Files inspector + upstream Flags/Skills/Reactions")
     print("Verified known-only conflict resolution. Git staging and commit happen in the workflow.")
 
 
