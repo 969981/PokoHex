@@ -23,6 +23,8 @@ partial class AbilityEditor
         DGV_Abilities = new DataGridView();
         B_Learn = new Button();
         B_LearnAll = new Button();
+        B_UnlockFood = new Button();
+        B_UnlockAbsorption = new Button();
         L_Count = new Label();
         GB_Wheel = new GroupBox();
         LB_Wheel = new ListBox();
@@ -54,6 +56,8 @@ partial class AbilityEditor
         DGV_Abilities.CurrentCellChanged += DGV_Abilities_CurrentCellChanged;
         buttons.Dock = DockStyle.Bottom;
         buttons.Height = 42;
+        buttons.AutoSize = true;
+        buttons.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         buttons.Padding = new Padding(0, 6, 0, 0);
         B_Learn.Name = "B_Learn";
         B_Learn.Text = "Learn";
@@ -63,7 +67,17 @@ partial class AbilityEditor
         B_LearnAll.Text = "Learn all";
         B_LearnAll.Size = new Size(100, 30);
         B_LearnAll.Click += B_LearnAll_Click;
-        buttons.Controls.AddRange([B_Learn, B_LearnAll]);
+        B_UnlockFood.Name = "B_UnlockFood";
+        B_UnlockFood.Text = "Unlock food boost";
+        B_UnlockFood.Size = new Size(160, 30);
+        B_UnlockFood.Visible = false;
+        B_UnlockFood.Click += B_UnlockFood_Click;
+        B_UnlockAbsorption.Name = "B_UnlockAbsorption";
+        B_UnlockAbsorption.Text = "Unlock absorption";
+        B_UnlockAbsorption.Size = new Size(160, 30);
+        B_UnlockAbsorption.Visible = false;
+        B_UnlockAbsorption.Click += B_UnlockAbsorption_Click;
+        buttons.Controls.AddRange([B_Learn, B_LearnAll, B_UnlockFood, B_UnlockAbsorption]);
         L_Count.Dock = DockStyle.Bottom;
         L_Count.Height = 28;
         L_Count.TextAlign = ContentAlignment.MiddleLeft;
@@ -109,6 +123,8 @@ partial class AbilityEditor
     private DataGridView DGV_Abilities = null!;
     private Button B_Learn = null!;
     private Button B_LearnAll = null!;
+    private Button B_UnlockFood = null!;
+    private Button B_UnlockAbsorption = null!;
     private Label L_Count = null!;
     private GroupBox GB_Wheel = null!;
     private ListBox LB_Wheel = null!;

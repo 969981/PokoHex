@@ -30,7 +30,7 @@ public partial class AbilityEditor
     protected override bool ShouldRender() => Active;
     private Task NotifyChanged() => Changed.InvokeAsync();
     private byte GetSlot(int slot) => Reactions ? Abilities!.GetReactionSlot(slot) : Abilities!.GetSkillSlot(slot);
-    private bool IsLearned(int index) => Reactions ? Abilities!.Reactions[index].Learned : Abilities!.Skills[index].Learned;
+    private bool IsLearned(int index) => Reactions ? Abilities!.Reactions[index].Learned : Abilities!.IsSkillLearned(index);
     private string GetName(byte index) => index == 0 ? "(Empty)" : Entries.FirstOrDefault(z => z.Value == index)?.Text ?? $"Saved {(Reactions ? "reaction" : "move")} {index}";
 
     protected override void OnParametersSet()
@@ -123,6 +123,36 @@ public partial class AbilityEditor
         try
         {
             SaveChanges();
+            WheelAbility = GetSlot(SelectedSlot);
+            LoadChoices();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
+
+    private async Task B_UnlockAbsorption_Click()
+    {
+        if (Reactions || Abilities == null || SelectedAbility != 3 || !Abilities.Skills[3].Learned)
+            return;
+        try
+        {
+            SaveChanges();
+            Abilities.UnlockLiquidAbsorption();
+            WheelAbility = GetSlot(SelectedSlot);
+            LoadChoices();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
+
+    private async Task B_UnlockFood_Click()
+    {
+        if (Reactions || Abilities == null || SelectedAbility is not (1 or 3 or 4 or 5) || !Abilities.Skills[SelectedAbility].Learned)
+            return;
+        try
+        {
+            SaveChanges();
+            Abilities.UnlockFoodBoost(SelectedAbility);
             WheelAbility = GetSlot(SelectedSlot);
             LoadChoices();
             await NotifyChanged();

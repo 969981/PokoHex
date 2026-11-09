@@ -32,6 +32,7 @@ partial class Main
         var items = new TabPage("Items");
         var villagers = new TabPage("Villagers");
         var map = new TabPage("Map");
+        var flags = new TabPage("Flags");
         var files = new TabPage("Files");
         DGV_SaveParts = new DataGridView();
         var playerHeader = new Panel();
@@ -40,6 +41,7 @@ partial class Main
         RB_Reactions = new RadioButton();
         Editor_Villagers = new VillagerEditor { Dock = DockStyle.Fill };
         Editor_Map = new MapEditor { Dock = DockStyle.Fill };
+        Editor_Flags = new FlagEditor { Dock = DockStyle.Fill };
         Editor_Skills = new AbilityEditor { Dock = DockStyle.Fill };
         Editor_Reactions = new AbilityEditor { Reactions = true, Dock = DockStyle.Fill, Visible = false };
         var name = new Label();
@@ -73,7 +75,7 @@ partial class Main
         L_Status.Text = "Open a save folder to begin.";
         TC_Editor.Dock = DockStyle.Fill;
         TC_Editor.Enabled = false;
-        TC_Editor.TabPages.AddRange([player, items, villagers, map, files]);
+        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, files]);
         DGV_SaveParts.Dock = DockStyle.Fill;
         DGV_SaveParts.ReadOnly = true;
         DGV_SaveParts.AllowUserToAddRows = false;
@@ -89,6 +91,8 @@ partial class Main
         DGV_SaveParts.Columns.Add("Support", "Edit support");
         DGV_SaveParts.Columns.Add("Hash", "Original SHA-256");
         files.Controls.Add(DGV_SaveParts);
+        TC_Editor.SelectedIndexChanged += TC_Editor_SelectedIndexChanged;
+        flags.Controls.Add(Editor_Flags);
         villagers.Controls.Add(Editor_Villagers);
         map.Controls.Add(Editor_Map);
         player.Padding = new Padding(8);
@@ -234,6 +238,7 @@ partial class Main
     private Button B_Set = null!;
     private VillagerEditor Editor_Villagers = null!;
     private MapEditor Editor_Map = null!;
+    private FlagEditor Editor_Flags = null!;
     private AbilityEditor Editor_Skills = null!;
     private AbilityEditor Editor_Reactions = null!;
     private RadioButton RB_Skills = null!;

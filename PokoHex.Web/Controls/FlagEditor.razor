@@ -1,0 +1,38 @@
+<p>Warning: Flags may affect gameplay progression, toggle these at your own risk.</p>
+
+@if (Flags == null)
+{
+    <p class="empty-state">Flags aren’t available for this save version.</p>
+}
+else
+{
+    <div class="split flag-editor">
+        <div class="list-pane">
+            <div class="filterbar">
+                <input type="search" aria-label="Search flags" placeholder="Search name or ID" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
+                <label class="check"><input type="checkbox" @bind:get="KnownOnly" @bind:set="CHK_Known_Changed" />Known only</label>
+            </div>
+            <div class="table-scroll">
+                <table class="inventory">
+                    <thead><tr><th>ID</th><th>Name</th><th>Enabled</th></tr></thead>
+                    <tbody>
+                        @foreach (var index in Entries)
+                        {
+                            <tr class="@(SelectedFlag == index ? "selected" : "")">
+                                <td>@index</td>
+                                <td><button class="row-button" aria-pressed="@(SelectedFlag == index)" @onclick="() => SelectFlag(index)">@FunctionFlagInfo.GetName(index)</button></td>
+                                <td>@(Flags.GetFlag(index) ? "Yes" : "No")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="list-status">@Entries.Length of @(FunctionFlags.Count - 1) flags</div>
+        </div>
+        <fieldset class="details" disabled="@(SelectedFlag < 1)">
+            <legend>@(SelectedFlag > 0 ? FunctionFlagInfo.GetName(SelectedFlag) : "Flag")</legend>
+            <label class="check"><input type="checkbox" @bind="Enabled" @bind:after="NotifyChanged" />Enabled</label>
+            <div class="buttons"><button class="primary" @onclick="B_Set_Click" disabled="@(!HasChanges)">Set</button></div>
+        </fieldset>
+    </div>
+}

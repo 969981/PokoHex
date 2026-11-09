@@ -56,6 +56,7 @@
                 </section>
                 <section hidden="@(SelectedTab != "Items")"><InventoryEditor @ref="Editor_Items" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Items")" Error="ShowError" Changed="Controls_Changed" /></section>
                 <section hidden="@(SelectedTab != "Villagers")"><VillagerEditor @ref="Editor_Villagers" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Villagers")" Error="ShowError" Changed="Controls_Changed" /></section>
+                <section hidden="@(SelectedTab != "Flags")"><FlagEditor @ref="Editor_Flags" SAV="SAV.Common" Language="Language" Active="@(SelectedTab == "Flags")" Error="ShowError" Changed="Controls_Changed" /></section>
                 @if (MapOpened)
                 {
                     <section hidden="@(SelectedTab != "Map")"><MapEditor @ref="Editor_Map" SAV="SAV" Language="Language" Active="@(SelectedTab == "Map")" Error="ShowError" Changed="Controls_Changed" /></section>

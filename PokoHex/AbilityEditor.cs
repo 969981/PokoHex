@@ -14,7 +14,7 @@ public partial class AbilityEditor : UserControl
     private AbilityInfo[] Entries => Reactions ? GameInfo.Strings.ReactionDataSource : GameInfo.Strings.SkillDataSource;
     private int WheelCount => Reactions ? PlayerAbilities.ReactionWheelCount : PlayerAbilities.SkillWheelCount;
     private byte GetSlot(int slot) => Reactions ? SAV!.GetReactionSlot(slot) : SAV!.GetSkillSlot(slot);
-    private bool IsLearned(int index) => Reactions ? SAV!.Reactions[index].Learned : SAV!.Skills[index].Learned;
+    private bool IsLearned(int index) => Reactions ? SAV!.Reactions[index].Learned : SAV!.IsSkillLearned(index);
     public bool HasChanges => SAV != null && SelectedSlot >= 0 && CB_WheelAbility.SelectedItem is AbilityInfo entry && entry.Value != GetSlot(SelectedSlot);
 
     public AbilityEditor() => InitializeComponent();
@@ -58,12 +58,31 @@ public partial class AbilityEditor : UserControl
         UpdateSelection();
     }
 
+    public void RefreshValues()
+    {
+        if (SAV != null)
+        {
+            foreach (DataGridViewRow row in DGV_Abilities.Rows)
+                row.Cells[2].Value = IsLearned(((AbilityInfo)row.Tag!).Value);
+        }
+        UpdateSelection();
+    }
+
     private void UpdateSelection()
     {
         if (Loading)
             return;
         B_Learn.Enabled = SAV != null && DGV_Abilities.CurrentRow?.Tag is AbilityInfo entry && !IsLearned(entry.Value);
         B_LearnAll.Enabled = SAV != null && Entries.Any(z => !IsLearned(z.Value));
+        var selected = (DGV_Abilities.CurrentRow?.Tag as AbilityInfo)?.Value ?? 0;
+        var hasFoodBoost = !Reactions && SAV != null && selected is 1 or 3 or 4 or 5;
+        var foodUnlocked = SAV?.IsFoodBoostUnlocked(selected) == true;
+        B_UnlockFood.Visible = hasFoodBoost;
+        B_UnlockFood.Enabled = hasFoodBoost && SAV!.Skills[selected].Learned && !foodUnlocked;
+        B_UnlockFood.Text = foodUnlocked ? "Food boost unlocked" : "Unlock food boost";
+        B_UnlockAbsorption.Visible = !Reactions && SAV != null && DGV_Abilities.CurrentRow?.Tag is AbilityInfo { Value: 3 };
+        B_UnlockAbsorption.Enabled = SAV != null && SAV.Skills[3].Learned && !SAV.LiquidAbsorptionUnlocked;
+        B_UnlockAbsorption.Text = SAV?.LiquidAbsorptionUnlocked == true ? "Absorption unlocked" : "Unlock absorption";
         var noun = Reactions ? "reactions" : "moves";
         L_Count.Text = SAV == null ? "Skills and reactions aren’t available for this save version."
             : $"{Entries.Count(z => IsLearned(z.Value))} of {Entries.Length} {noun} learned";
@@ -144,6 +163,26 @@ public partial class AbilityEditor : UserControl
             Learn(entry.Value);
         LoadAbilities();
         LoadWheel();
+    }
+
+    private void B_UnlockFood_Click(object sender, EventArgs e)
+    {
+        if (Reactions || SAV == null || DGV_Abilities.CurrentRow?.Tag is not AbilityInfo entry || entry.Value is not (1 or 3 or 4 or 5) || !SAV.Skills[entry.Value].Learned)
+            return;
+        SaveChanges();
+        SAV.UnlockFoodBoost(entry.Value);
+        LoadWheel();
+        UpdateSelection();
+    }
+
+    private void B_UnlockAbsorption_Click(object sender, EventArgs e)
+    {
+        if (Reactions || SAV == null || !SAV.Skills[3].Learned || DGV_Abilities.CurrentRow?.Tag is not AbilityInfo { Value: 3 })
+            return;
+        SaveChanges();
+        SAV.UnlockLiquidAbsorption();
+        LoadWheel();
+        UpdateSelection();
     }
 
     private void LB_Wheel_SelectedIndexChanged(object sender, EventArgs e)
