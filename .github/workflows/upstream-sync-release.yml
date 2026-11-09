@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/upstream-sync-release.yml'
+      - '.github/scripts/resolve-known-pokohex-merge.py'
       - 'PokoHex/**'
       - 'PokoHex.Core/**'
       - 'PokoHex.Web/**'
@@ -74,12 +75,12 @@ jobs:
             # A real merge preserves local workflows and any other local changes.
             # Merge conflicts stop the workflow rather than force-pushing.
             if ! git merge --no-ff --no-edit upstream/main; then
-              # Only the verified Files-tab vs Skills/Reactions conflict is resolved.
+              # Only pinned, audited Files + Flags/Skills/Reactions conflicts are resolved.
               # All other conflicts are intentionally fatal to avoid losing features.
               # The resolver compares both unmerged Git index blob SHAs and fails closed.
               python3 .github/scripts/resolve-known-pokohex-merge.py
-              git add -- PokoHex/Main.cs PokoHex/Main.Designer.cs
-              git diff --cached --check -- PokoHex/Main.cs PokoHex/Main.Designer.cs
+              git add -- PokoHex/Main.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
+              git diff --cached --check -- PokoHex/Main.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
               git commit --no-edit
             fi
             git push origin HEAD:main
