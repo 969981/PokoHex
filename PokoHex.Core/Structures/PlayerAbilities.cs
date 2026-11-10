@@ -37,28 +37,45 @@ public sealed class PlayerAbilities
         FunctionFlags.Span[15] |= 32;
     }
 
+    public static bool HasFoodBoost(int index) => index is 1 or 3 or 4 or 5 or 10;
+
+    public bool CanUnlockFoodBoost(int index) => HasFoodBoost(index) && IsSkillLearned(index) && (index != 10 || DiveUnlocked);
+
     public bool IsFoodBoostUnlocked(int index) => index switch
     {
         1 => (FunctionFlags.Span[8] & 128) != 0,
         3 => (FunctionFlags.Span[9] & 2) != 0,
         4 => RockSmashFoodUnlocked,
         5 => (FunctionFlags.Span[9] & 1) != 0,
+        10 => IsSkillLearned(10) && DiveUnlocked && (FunctionFlags.Span[19] & 2) != 0,
         _ => false,
     };
 
     public void UnlockFoodBoost(int index)
     {
-        if (index is not (1 or 3 or 4 or 5))
+        if (!HasFoodBoost(index))
             throw new ArgumentOutOfRangeException(nameof(index), "Choose a move with a food boost.");
-        if (!Skills[index].Learned)
+        if (!IsSkillLearned(index))
             throw new ArgumentException("Learn the move first.");
+        if (index == 10 && !DiveUnlocked)
+            throw new ArgumentException("Unlock Dive first.");
         switch (index)
         {
             case 1: FunctionFlags.Span[8] |= 128; break;
             case 3: FunctionFlags.Span[9] |= 2; break;
             case 4: UnlockRockSmashFood(); break;
             case 5: FunctionFlags.Span[9] |= 1; break;
+            case 10: FunctionFlags.Span[19] |= 2; break;
         }
+    }
+
+    public bool DiveUnlocked => (FunctionFlags.Span[18] & 16) != 0;
+
+    public void UnlockDive()
+    {
+        if (!IsSkillLearned(10))
+            throw new ArgumentException("Learn Surf first.");
+        FunctionFlags.Span[18] |= 16;
     }
 
     public bool LiquidAbsorptionUnlocked => (FunctionFlags.Span[6] & 64) != 0;

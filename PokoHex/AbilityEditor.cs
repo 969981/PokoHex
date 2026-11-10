@@ -75,10 +75,13 @@ public partial class AbilityEditor : UserControl
         B_Learn.Enabled = SAV != null && DGV_Abilities.CurrentRow?.Tag is AbilityInfo entry && !IsLearned(entry.Value);
         B_LearnAll.Enabled = SAV != null && Entries.Any(z => !IsLearned(z.Value));
         var selected = (DGV_Abilities.CurrentRow?.Tag as AbilityInfo)?.Value ?? 0;
-        var hasFoodBoost = !Reactions && SAV != null && selected is 1 or 3 or 4 or 5;
+        B_UnlockDive.Visible = !Reactions && SAV != null && selected == 10;
+        B_UnlockDive.Enabled = SAV != null && SAV.IsSkillLearned(10) && !SAV.DiveUnlocked;
+        B_UnlockDive.Text = SAV?.DiveUnlocked == true ? "Dive unlocked" : "Unlock Dive";
+        var hasFoodBoost = !Reactions && SAV != null && PlayerAbilities.HasFoodBoost(selected);
         var foodUnlocked = SAV?.IsFoodBoostUnlocked(selected) == true;
         B_UnlockFood.Visible = hasFoodBoost;
-        B_UnlockFood.Enabled = hasFoodBoost && SAV!.Skills[selected].Learned && !foodUnlocked;
+        B_UnlockFood.Enabled = hasFoodBoost && SAV!.CanUnlockFoodBoost(selected) && !foodUnlocked;
         B_UnlockFood.Text = foodUnlocked ? "Food boost unlocked" : "Unlock food boost";
         B_UnlockAbsorption.Visible = !Reactions && SAV != null && DGV_Abilities.CurrentRow?.Tag is AbilityInfo { Value: 3 };
         B_UnlockAbsorption.Enabled = SAV != null && SAV.Skills[3].Learned && !SAV.LiquidAbsorptionUnlocked;
@@ -167,10 +170,20 @@ public partial class AbilityEditor : UserControl
 
     private void B_UnlockFood_Click(object sender, EventArgs e)
     {
-        if (Reactions || SAV == null || DGV_Abilities.CurrentRow?.Tag is not AbilityInfo entry || entry.Value is not (1 or 3 or 4 or 5) || !SAV.Skills[entry.Value].Learned)
+        if (Reactions || SAV == null || DGV_Abilities.CurrentRow?.Tag is not AbilityInfo entry || !SAV.CanUnlockFoodBoost(entry.Value))
             return;
         SaveChanges();
         SAV.UnlockFoodBoost(entry.Value);
+        LoadWheel();
+        UpdateSelection();
+    }
+
+    private void B_UnlockDive_Click(object sender, EventArgs e)
+    {
+        if (Reactions || SAV == null || !SAV.IsSkillLearned(10) || DGV_Abilities.CurrentRow?.Tag is not AbilityInfo { Value: 10 })
+            return;
+        SaveChanges();
+        SAV.UnlockDive();
         LoadWheel();
         UpdateSelection();
     }

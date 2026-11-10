@@ -145,9 +145,24 @@ public partial class AbilityEditor
         catch (ArgumentException ex) { Error(ex.Message); }
     }
 
+    private async Task B_UnlockDive_Click()
+    {
+        if (Reactions || Abilities == null || SelectedAbility != 10 || !Abilities.IsSkillLearned(10))
+            return;
+        try
+        {
+            SaveChanges();
+            Abilities.UnlockDive();
+            WheelAbility = GetSlot(SelectedSlot);
+            LoadChoices();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
+
     private async Task B_UnlockFood_Click()
     {
-        if (Reactions || Abilities == null || SelectedAbility is not (1 or 3 or 4 or 5) || !Abilities.Skills[SelectedAbility].Learned)
+        if (Reactions || Abilities == null || !Abilities.CanUnlockFoodBoost(SelectedAbility))
             return;
         try
         {

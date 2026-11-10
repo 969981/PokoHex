@@ -23,6 +23,7 @@ partial class AbilityEditor
         DGV_Abilities = new DataGridView();
         B_Learn = new Button();
         B_LearnAll = new Button();
+        B_UnlockDive = new Button();
         B_UnlockFood = new Button();
         B_UnlockAbsorption = new Button();
         L_Count = new Label();
@@ -67,6 +68,11 @@ partial class AbilityEditor
         B_LearnAll.Text = "Learn all";
         B_LearnAll.Size = new Size(100, 30);
         B_LearnAll.Click += B_LearnAll_Click;
+        B_UnlockDive.Name = "B_UnlockDive";
+        B_UnlockDive.Text = "Unlock Dive";
+        B_UnlockDive.Size = new Size(160, 30);
+        B_UnlockDive.Visible = false;
+        B_UnlockDive.Click += B_UnlockDive_Click;
         B_UnlockFood.Name = "B_UnlockFood";
         B_UnlockFood.Text = "Unlock food boost";
         B_UnlockFood.Size = new Size(160, 30);
@@ -77,7 +83,7 @@ partial class AbilityEditor
         B_UnlockAbsorption.Size = new Size(160, 30);
         B_UnlockAbsorption.Visible = false;
         B_UnlockAbsorption.Click += B_UnlockAbsorption_Click;
-        buttons.Controls.AddRange([B_Learn, B_LearnAll, B_UnlockFood, B_UnlockAbsorption]);
+        buttons.Controls.AddRange([B_Learn, B_LearnAll, B_UnlockDive, B_UnlockFood, B_UnlockAbsorption]);
         L_Count.Dock = DockStyle.Bottom;
         L_Count.Height = 28;
         L_Count.TextAlign = ContentAlignment.MiddleLeft;
@@ -123,6 +129,7 @@ partial class AbilityEditor
     private DataGridView DGV_Abilities = null!;
     private Button B_Learn = null!;
     private Button B_LearnAll = null!;
+    private Button B_UnlockDive = null!;
     private Button B_UnlockFood = null!;
     private Button B_UnlockAbsorption = null!;
     private Label L_Count = null!;
