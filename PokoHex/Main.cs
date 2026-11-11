@@ -27,7 +27,9 @@ public partial class Main : Form
         }
     }
 
-    private bool HasChanges => SAV != null && (SAV.IsEdited || TB_Name.Text != SAV.Common.PlayerName || HasSlotChanges || Editor_Villagers.HasChanges || Editor_Map.HasChanges || Editor_Skills.HasChanges || Editor_Reactions.HasChanges || Editor_Flags.HasChanges);
+    private bool HasChanges => SAV != null && (SAV.IsEdited || TB_Name.Text != SAV.Common.PlayerName || HasSlotChanges || HasCoinsChanges || Editor_Villagers.HasChanges || Editor_Map.HasChanges || Editor_Skills.HasChanges || Editor_Reactions.HasChanges || Editor_Flags.HasChanges);
+
+    private bool HasCoinsChanges => SAV?.Common.LifeCoinsEditable == true && NUD_LifeCoins.Value != SAV.Common.LifeCoins;
 
     private bool HasSlotChanges
     {
@@ -57,6 +59,9 @@ public partial class Main : Form
             SAV = save;
             Loading = true;
             TB_Name.Text = save.Common.PlayerName;
+            NUD_LifeCoins.Visible = L_Coins.Visible = save.Common.LifeCoinsEditable;
+            if (save.Common.LifeCoinsEditable)
+                NUD_LifeCoins.Value = Math.Max(0, save.Common.LifeCoins);
             CB_Inventory.SelectedIndex = 0;
             InventoryStart = 0;
             TC_Editor.Enabled = true;
@@ -288,6 +293,8 @@ public partial class Main : Form
             Editor_Skills.SaveChanges();
             Editor_Reactions.SaveChanges();
             Editor_Flags.SaveChanges();
+            if (SAV.Common.LifeCoinsEditable && NUD_LifeCoins.Value != SAV.Common.LifeCoins)
+                SAV.Common.LifeCoins = (int)NUD_LifeCoins.Value;
             if (TB_Name.Text != SAV.Common.PlayerName)
                 SAV.Common.PlayerName = TB_Name.Text;
             using var dialog = new FolderBrowserDialog { Description = "Select a new, empty folder for the edited save", UseDescriptionForTitle = true };

@@ -49,8 +49,10 @@ p { line-height: 1.6; }
 .workspace { background: #fafafa; min-height: 630px; padding: 16px; }
 [hidden] { display: none !important; }
 .welcome { max-width: 680px; margin: 100px auto; padding: 0 24px; }
-.player-header { display: grid; grid-template-columns: max-content minmax(0, 244px); align-items: center; gap: 12px; margin-bottom: 18px; }
-.player-header input { width: 244px; max-width: 100%; min-width: 0; }
+.player-header { display: grid; grid-template-columns: max-content minmax(0, 244px) max-content minmax(0, 130px); align-items: center; gap: 12px; margin-bottom: 18px; }
+.player-header input { min-width: 0; max-width: 100%; }
+.player-header #player-name { width: 244px; }
+.player-header #life-coins { width: 130px; }
 .player-sections { display: flex; grid-column: 2; }
 .player-sections button { min-width: 116px; padding: 7px 18px; border-radius: 0; }
 .player-sections button:first-child { border-radius: 3px 0 0 3px; }
