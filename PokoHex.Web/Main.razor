@@ -46,6 +46,11 @@
                     <div class="player-header">
                         <label for="player-name">Player name:</label>
                         <input id="player-name" @bind="PlayerName" @bind:event="oninput" />
+                        @if (SAV.Common.LifeCoinsEditable)
+                        {
+                            <label for="life-coins">Life Coins:</label>
+                            <input id="life-coins" type="number" min="0" @bind="LifeCoins" @bind:event="oninput" @bind:after="Controls_Changed" />
+                        }
                         <div class="player-sections" role="group" aria-label="Player editor">
                             <button aria-pressed="@(PlayerSection == "Skills")" @onclick='() => PlayerSection = "Skills"'>Skills</button>
                             <button aria-pressed="@(PlayerSection == "Reactions")" @onclick='() => PlayerSection = "Reactions"'>Reactions</button>
