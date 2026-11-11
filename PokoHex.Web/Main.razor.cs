@@ -25,6 +25,8 @@ public partial class Main : IAsyncDisposable
     private ElementReference EditorWindow;
     private DotNetObjectReference<Main>? DropReference;
     private string PlayerName = string.Empty;
+    private int lifeCoins;
+    private int LifeCoins { get => lifeCoins; set => lifeCoins = Math.Max(0, value); }
     private string SaveName = string.Empty;
     private string SelectedTab = "Player";
     private string PlayerSection = "Skills";
@@ -38,6 +40,7 @@ public partial class Main : IAsyncDisposable
     private readonly record struct RenderState(SaveFolder? Save, string Name, string SaveName, string Tab, string PlayerSection,
         string Status, string Error, int Language, bool Busy, bool MapOpened, bool Dirty);
     private bool HasChanges => SAV != null && (PlayerName != SAV.Common.PlayerName ||
+        SAV.Common.LifeCoinsEditable && LifeCoins != SAV.Common.LifeCoins ||
         Editor_Items?.HasChanges == true || Editor_Villagers?.HasChanges == true || Editor_Map?.HasChanges == true ||
         Editor_Skills?.HasChanges == true || Editor_Reactions?.HasChanges == true || Editor_Flags?.HasChanges == true || SAV.IsEdited);
 
@@ -116,6 +119,7 @@ public partial class Main : IAsyncDisposable
         SAV = save;
         SaveName = name;
         PlayerName = save.Common.PlayerName;
+        LifeCoins = save.Common.LifeCoins;
         Editor_Items = null;
         Editor_Villagers = null;
         Editor_Map = null;
@@ -140,6 +144,8 @@ public partial class Main : IAsyncDisposable
                 var check = SaveFile.Read(SAV.Common.Write());
                 check.PlayerName = PlayerName;
             }
+            if (SAV.Common.LifeCoinsEditable && LifeCoins != SAV.Common.LifeCoins)
+                SAV.Common.LifeCoins = LifeCoins;
             Editor_Map?.SaveChanges();
             Editor_Items?.SaveChanges();
             Editor_Villagers?.SaveChanges();

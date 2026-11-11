@@ -39,6 +39,20 @@ public sealed class SaveFile
                 Data.AsMemory(layout.FunctionFlagsOffset, FunctionFlags.SIZE));
     }
 
+    public bool LifeCoinsEditable => Layout.LifeCoinsOffset != 0;
+
+    public int LifeCoins
+    {
+        get => LifeCoinsEditable ? ReadInt32LittleEndian(Data.AsSpan(Layout.LifeCoinsOffset)) : 0;
+        set
+        {
+            if (!LifeCoinsEditable)
+                throw new InvalidOperationException("Life Coin editing is not available.");
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            WriteInt32LittleEndian(Data.AsSpan(Layout.LifeCoinsOffset), value);
+        }
+    }
+
     public string PlayerName
     {
         get => ReadName(GetNameOffset());

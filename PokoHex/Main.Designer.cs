@@ -42,6 +42,8 @@ partial class Main
         Editor_Flags = new FlagEditor { Dock = DockStyle.Fill };
         Editor_Skills = new AbilityEditor { Dock = DockStyle.Fill };
         Editor_Reactions = new AbilityEditor { Reactions = true, Dock = DockStyle.Fill, Visible = false };
+        L_Coins = new Label();
+        NUD_LifeCoins = new NumericUpDown();
         var name = new Label();
         TB_Name = new TextBox();
         DGV_Items = new DataGridView();
@@ -103,10 +105,16 @@ partial class Main
         name.AutoSize = true;
         name.Location = new Point(10, 20);
         name.Text = "Player name:";
+        L_Coins.AutoSize = true;
+        L_Coins.Location = new Point(430, 20);
+        L_Coins.Text = "Life Coins:";
+        NUD_LifeCoins.Location = new Point(520, 16);
+        NUD_LifeCoins.Size = new Size(110, 23);
+        NUD_LifeCoins.Maximum = int.MaxValue;
         TB_Name.Location = new Point(114, 16);
         TB_Name.Size = new Size(244, 23);
         TB_Name.MaxLength = 24;
-        playerHeader.Controls.AddRange([name, TB_Name, playerSections]);
+        playerHeader.Controls.AddRange([name, TB_Name, playerSections, L_Coins, NUD_LifeCoins]);
         player.Controls.AddRange([Editor_Reactions, Editor_Skills, playerHeader]);
         items.Padding = new Padding(8);
         split.Dock = DockStyle.Fill;
@@ -211,6 +219,8 @@ partial class Main
     private ToolStripStatusLabel L_Status = null!;
     private TabControl TC_Editor = null!;
     private TextBox TB_Name = null!;
+    private Label L_Coins = null!;
+    private NumericUpDown NUD_LifeCoins = null!;
     private DataGridView DGV_Items = null!;
     private ComboBox CB_Inventory = null!;
     private ComboBox CB_Item = null!;
