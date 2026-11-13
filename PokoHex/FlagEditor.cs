@@ -36,8 +36,10 @@ public partial class FlagEditor : UserControl
     public void RefreshValues()
     {
         SaveChanges();
+        Loading = true;
         foreach (DataGridViewRow row in DGV_Flags.Rows)
             row.Cells[2].Value = SAV!.GetFlag((int)row.Tag!);
+        Loading = false;
         LoadFlag();
     }
 
@@ -84,10 +86,39 @@ public partial class FlagEditor : UserControl
             return;
         SAV!.SetFlag(SelectedFlag, CHK_Enabled.Checked);
         LoadedValue = CHK_Enabled.Checked;
-        var row = DGV_Flags.Rows.Cast<DataGridViewRow>().FirstOrDefault(z => (int)z.Tag! == SelectedFlag);
-        if (row != null)
-            row.Cells[2].Value = LoadedValue;
+        UpdateRow(SelectedFlag, LoadedValue);
         B_Set.Enabled = false;
+    }
+
+    private void UpdateRow(int index, bool value)
+    {
+        var row = DGV_Flags.Rows.Cast<DataGridViewRow>().FirstOrDefault(z => (int)z.Tag! == index);
+        if (row == null)
+            return;
+        var loading = Loading;
+        Loading = true;
+        row.Cells[2].Value = value;
+        Loading = loading;
+    }
+
+    private void DGV_Flags_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+    {
+        if (!Loading && DGV_Flags.IsCurrentCellDirty && DGV_Flags.CurrentCell is DataGridViewCheckBoxCell)
+            DGV_Flags.CommitEdit(DataGridViewDataErrorContexts.Commit);
+    }
+
+    private void DGV_Flags_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+    {
+        if (Loading || SAV == null || e.ColumnIndex != 2 || e.RowIndex < 0 || e.RowIndex >= DGV_Flags.Rows.Count)
+            return;
+        var row = DGV_Flags.Rows[e.RowIndex];
+        if (row.Tag is not int index || index is < 1 or >= FunctionFlags.Count || row.Cells[2].Value is not bool value)
+            return;
+        SaveChanges();
+        SAV.SetFlag(index, value);
+        UpdateRow(index, value);
+        if (SelectedFlag == index)
+            LoadFlag();
     }
 
     private void DGV_Flags_CurrentCellChanged(object sender, EventArgs e)
@@ -110,7 +141,10 @@ public partial class FlagEditor : UserControl
     private void CHK_Enabled_CheckedChanged(object sender, EventArgs e)
     {
         if (!Loading)
+        {
             B_Set.Enabled = HasChanges;
+            UpdateRow(SelectedFlag, CHK_Enabled.Checked);
+        }
     }
 
     private void B_Set_Click(object sender, EventArgs e) => SaveChanges();
