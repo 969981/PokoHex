@@ -39,7 +39,7 @@ public partial class MapEditor
     private bool RefreshControls;
     private readonly record struct PlacementState(StageSave? Stage, int Revision, MapPart? Part, ushort Variation,
         int X, int Y, int Z, int Direction);
-    private readonly record struct ViewState(StageSave? Stage, int Revision, int Chunk, int Height, bool AllHeights);
+    private readonly record struct ViewState(StageSave? Stage, int Revision, int Chunk, int Height, bool AllHeights, int Interior, bool VisibleOnly);
     private readonly record struct RenderState(SaveFolder Save, PlacementState Placement, ViewState View,
         int Area, string Search, GameStrings Strings, bool Loading, string Error);
     private int PreviousLanguage = -1;
@@ -52,6 +52,10 @@ public partial class MapEditor
     private int Direction;
     private ushort Variation;
     private bool AllHeights = true;
+    private bool VisibleOnly;
+    private int InteriorId;
+    private MapInterior? Interior => Stage?.Interiors.FirstOrDefault(z => z.Id == InteriorId && z.Chunk == Chunk);
+    private bool CanEdit => SelectedPart != null && Stage?.CanEdit(SelectedPart) == true;
     private bool Loading;
     private string Search = string.Empty;
     private string LoadError = "No areas are available.";
@@ -71,11 +75,12 @@ public partial class MapEditor
             return PreviewError;
         }
     }
-    private MapBounds? PendingBounds => Direction is >= 0 and <= 3 ? MapPartInfo.Get(Variation).GetBounds(X, Y, Z, Direction) : null;
+    private MapBounds? PendingBounds => !CanEdit && SelectedPart != null ? GetVisibleBounds(SelectedPart) :
+        Direction is >= 0 and <= 3 ? MapPartInfo.Get(Variation).GetBounds(X, Y, Z, Direction) : null;
     private MapPart[] VisibleParts { get { PrepareDrawing(); return DrawnParts; } }
 
     private PlacementState GetPlacementState() => new(Stage, Revision, SelectedPart, Variation, X, Y, Z, Direction);
-    private ViewState GetViewState() => new(Stage, Revision, Chunk, Height, AllHeights);
+    private ViewState GetViewState() => new(Stage, Revision, Chunk, Height, AllHeights, InteriorId, VisibleOnly);
     private RenderState GetRenderState() => new(SAV, GetPlacementState(), GetViewState(), Area, Search, GameInfo.Strings, Loading, LoadError);
     protected override bool ShouldRender() => Active && (RefreshControls || LastRender != GetRenderState());
     protected override void OnAfterRender(bool firstRender)
@@ -106,6 +111,7 @@ public partial class MapEditor
         Stage = null;
         Revision++;
         SelectedPart = null;
+        InteriorId = 0;
         Entries = [];
         if (!SAV.StageIds.Contains(Area))
             return;
@@ -118,7 +124,7 @@ public partial class MapEditor
             Chunk = Stage.Chunks[0];
             Search = string.Empty;
             LoadParts();
-            SelectedPart = Entries.FirstOrDefault(z => z.Info.CanEdit) ?? Entries.FirstOrDefault();
+            SelectedPart = Entries.FirstOrDefault(Stage.CanEdit) ?? Entries.FirstOrDefault();
             LoadPart(true);
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException)
@@ -149,7 +155,8 @@ public partial class MapEditor
     private void LoadParts()
     {
         PrepareParts();
-        Entries = Search.Length == 0 ? SortedParts : SortedParts.Where(z => PartLabels[z.Index].Contains(Search, StringComparison.CurrentCultureIgnoreCase)).ToArray();
+        Entries = SortedParts.Where(z => (Search.Length == 0 || PartLabels[z.Index].Contains(Search, StringComparison.CurrentCultureIgnoreCase)) &&
+            (!VisibleOnly && Interior == null || IsVisible(z))).ToArray();
     }
 
     private void BindChoices() => Choices = SelectedPart == null ? [] : MapPartInfo.All.ToArray().Where(z => z.CanEdit || z.Value == SelectedPart.Variation)
@@ -169,7 +176,50 @@ public partial class MapEditor
         {
             Chunk = part.Chunk;
             Height = part.Y;
+            InteriorId = Stage?.GetInterior(part)?.Id ?? 0;
+            LoadParts();
         }
+    }
+
+    private void CB_Chunk_Changed(int chunk)
+    {
+        if (Stage == null || !Stage.Chunks.Contains(chunk) || !TrySaveChanges())
+            return;
+        Chunk = chunk;
+        InteriorId = Stage.Interiors.FirstOrDefault(z => z.Chunk == chunk)?.Id ?? 0;
+        if (Interior is { } room)
+            Height = room.Floor + 1;
+        LoadParts();
+        if (Interior != null || VisibleOnly)
+        {
+            SelectedPart = Entries.FirstOrDefault();
+            LoadPart(false);
+        }
+    }
+
+    private void CB_Interior_Changed(int id)
+    {
+        if (Stage == null || !Stage.Interiors.Any(z => z.Id == id && z.Chunk == Chunk) || !TrySaveChanges())
+            return;
+        InteriorId = id;
+        Height = Interior!.Floor + 1;
+        LoadParts();
+        SelectedPart = Entries.FirstOrDefault();
+        LoadPart(false);
+    }
+
+    private void B_Interiors_Click()
+    {
+        var room = Stage?.Interiors.FirstOrDefault();
+        if (room != null)
+            CB_Chunk_Changed(room.Chunk);
+    }
+
+    private async Task View_Changed()
+    {
+        if (TrySaveChanges())
+            LoadParts();
+        await NotifyChanged();
     }
 
     public void SaveChanges()
@@ -237,7 +287,7 @@ public partial class MapEditor
             return;
         var x = OriginX + point[0];
         var z = OriginZ + point[1];
-        if (e.Button == 2 && SelectedPart?.Info.CanEdit == true)
+        if (e.Button == 2 && CanEdit)
         {
             X = x;
             Z = z;
@@ -255,7 +305,7 @@ public partial class MapEditor
         await NotifyChanged();
     }
 
-    private static MapBounds GetVisibleBounds(MapPart part) => part.Bounds is { Width: > 0, Height: > 0, Depth: > 0 } bounds ? bounds : new(part.X, part.Y, part.Z, 1, 1, 1);
+    private MapBounds GetVisibleBounds(MapPart part) => Stage!.GetDisplayBounds(part);
     private (int X, int Z, int Width, int Height) GetRectangle(MapBounds bounds) => ((bounds.X - OriginX) * 16, (bounds.Z - OriginZ) * 16, bounds.Width * 16, bounds.Depth * 16);
 
     private string GetGroundPath() { PrepareDrawing(); return GroundPath; }
@@ -265,19 +315,28 @@ public partial class MapEditor
         var state = GetViewState();
         if (DrawingState == state)
             return;
-        DrawnParts = Stage?.Parts.Where(z => GetVisibleBounds(z).Intersects(new(OriginX, 0, OriginZ, 32, 128, 32)) &&
-            (AllHeights || Layer >= z.Y && Layer < z.Y + Math.Max(1, (int)z.Info.Height))).OrderBy(z => z.Y).ThenBy(z => z.Index).ToArray() ?? [];
+        DrawnParts = Stage?.Parts.Where(IsVisible).OrderBy(z => z.Y).ThenBy(z => z.Index).ToArray() ?? [];
         var path = new StringBuilder();
         if (Stage != null)
         {
             for (int z = 0; z < 32; z++)
             for (int x = 0; x < 32; x++)
             {
-                if (Stage.GetCell(OriginX + x, Layer, OriginZ + z) != 0)
+                var layer = Interior is { } room && AllHeights ? Math.Clamp(Layer, room.Floor + 1, room.Ceiling - 1) : Layer;
+                if (Stage.GetCell(OriginX + x, layer, OriginZ + z) != 0)
                     path.Append($"M{x * 16} {z * 16}h16v16h-16z");
             }
         }
         GroundPath = path.ToString();
         DrawingState = state;
+    }
+
+    private bool IsVisible(MapPart part)
+    {
+        var bounds = GetVisibleBounds(part);
+        if (Interior is { } room && (!room.Contains(part) || part.Y <= room.Floor || part.Y >= room.Ceiling || part.Info.ItemId == 0))
+            return false;
+        return bounds.Intersects(new(OriginX, 0, OriginZ, 32, 128, 32)) &&
+            (AllHeights || Layer >= bounds.Y && Layer < bounds.Y + bounds.Height);
     }
 }

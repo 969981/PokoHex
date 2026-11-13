@@ -6268,4 +6268,358 @@
   <data name="reaction_0095" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Reaction\reaction_0095.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="pattern_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_1.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_2.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_3.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_4.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_5.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_6.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_7.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_8.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_9.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_10.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_11.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_12.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_13.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_14.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_15.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_16.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_17" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_17.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_18.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_19" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_19.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_20.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_21.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_22.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_23.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_24.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_25" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_25.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_26.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_27" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_27.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_28" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_28.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_29" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_29.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_30" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_30.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_31.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_32.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_33" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_33.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_34" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_34.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_35" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_35.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_36" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_36.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_37" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_37.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_38" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_38.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_39" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_39.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_40" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_40.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_41.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_42" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_42.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_43" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_43.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_44" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_44.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_45" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_45.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_46" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_46.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_47" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_47.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_48.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_49" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_49.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_50" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_50.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_51" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_51.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_52" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_52.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_53" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_53.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_54" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_54.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_55" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_55.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_56" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_56.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_57" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_57.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_58" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_58.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_59" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_59.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_60" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_60.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_61" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_61.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_62" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_62.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_63" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_63.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_64.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_65" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_65.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_66" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_66.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_67" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_67.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_68" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_68.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_69" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_69.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_70" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_70.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_71" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_71.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_72" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_72.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_73" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_73.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_74" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_74.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_75" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_75.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_76" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_76.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_77" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_77.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_78" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_78.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_79" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_79.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_80" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_80.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_81" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_81.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_82" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_82.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_83" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_83.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_84" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_84.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_85" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_85.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_86" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_86.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_87" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_87.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_88" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_88.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_89" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_89.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_90" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_90.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_91" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_91.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_92" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_92.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_93" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_93.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_94" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_94.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_95" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_95.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_96" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_96.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_97" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_97.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_98" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_98.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_99" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_99.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="pattern_100" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern\pattern_100.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_01.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_02.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_03.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_04.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_05.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_06.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_07.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_08.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_09" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_09.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_10.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_11.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_12.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_13.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_14.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_15.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_16.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_17" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_17.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="paint_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paint\paint_18.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
 </root>

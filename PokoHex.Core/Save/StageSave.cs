@@ -20,6 +20,8 @@ public sealed class StageSave
     private const int Points = 0x1207723;
     private const int Grid = 0x23FFEDC;
     private const int ChunkCells = 0x20000;
+    private const int Buildings = 0x4C6418;
+    private const int BuildingSize = 18;
     private readonly byte[] Original;
     private readonly byte[] Raw;
     private readonly Dictionary<int, byte> Changed = [];
@@ -30,6 +32,7 @@ public sealed class StageSave
     public ReadOnlyMemory<byte> Data => Raw;
     public MapPart[] Parts { get; }
     public int[] Chunks { get; }
+    public MapInterior[] Interiors { get; }
     public bool IsEdited => Changed.Count != 0;
     public bool CanUndo => Undo.Count != 0;
     public bool CanRedo => Redo.Count != 0;
@@ -67,6 +70,50 @@ public sealed class StageSave
         Parts = parts.ToArray();
         // Saved links can be stale after pool compaction. The native loader rebuilds
         // them from point references; preserve them without following them here.
+        Interiors = ReadInteriors();
+    }
+
+    private MapInterior[] ReadInteriors()
+    {
+        var result = new List<MapInterior>();
+        for (int id = 1; id <= 50; id++)
+        {
+            var row = Raw.AsSpan(Buildings + id * BuildingSize, BuildingSize);
+            var info = MapBuildingInfo.Get(row[7]);
+            var slot = id - 1;
+            var chunk = 3965 - slot / 10;
+            var floor = 4 + slot % 10 * 12;
+            if (row[8] != 3 || info.FloorVariation == 0 ||
+                !Parts.Any(p => p.Chunk == chunk && p.Y == floor && p.Variation == info.FloorVariation))
+                continue;
+            var item = info.ItemId;
+            var upper = item == 0 && row[6] is > 0 and < 110;
+            if (upper)
+            {
+                var pair = Raw.AsSpan(Buildings + row[6] * BuildingSize, BuildingSize);
+                if (pair[6] == id && pair[..6].SequenceEqual(row[..6]))
+                    item = MapBuildingInfo.Get(pair[7]).ItemId;
+            }
+            result.Add(new(id, row[7], chunk, floor, item, upper, id <= 4 && row[10] != 0xFF));
+        }
+        return result.ToArray();
+    }
+
+    public MapInterior? GetInterior(MapPart part) => Interiors.FirstOrDefault(z => z.Contains(part));
+    public bool CanEdit(MapPart part) => part.Info.CanEdit && !IsInterior(part.Bounds);
+    private static bool IsInterior(int chunk, int y) => chunk is >= 3961 and <= 3965 && y is >= 4 and < 124;
+    private static bool IsInterior(MapBounds bounds) => bounds.Intersects(new(1824, 4, 1952, 160, 120, 32));
+
+    public MapBounds GetDisplayBounds(MapPart part)
+    {
+        var bounds = part.Bounds;
+        if (bounds.Width == 0 || bounds.Height == 0 || bounds.Depth == 0)
+            return new(part.X, part.Y, part.Z, 1, 1, 1);
+        if (!IsInterior(part.Chunk, part.Y))
+            return bounds;
+        var x = part.Direction is 1 or 2 ? bounds.Width : 0;
+        var z = part.Direction is 0 or 1 ? bounds.Depth : 0;
+        return new(bounds.X - x, bounds.Y, bounds.Z - z, bounds.Width * 2, bounds.Height, bounds.Depth * 2);
     }
 
     private int GetSlot(int chunk) => ReadUInt16LittleEndian(Raw.AsSpan(ChunkMap + chunk * 2));
@@ -110,6 +157,8 @@ public sealed class StageSave
     {
         if (!Parts.Contains(part))
             throw new ArgumentException("Select an object from this map.");
+        if (IsInterior(part.Chunk, part.Y) || IsInterior((z >> 5) * 64 + (x >> 5), y))
+            throw new ArgumentException("Interior furniture is view-only.");
         var info = MapPartInfo.Get(variation);
         if (!part.Info.CanEdit || !info.CanEdit)
             throw new ArgumentException("This pass edits beds, sofas, cushions and toys. Other objects are view-only.");
@@ -122,6 +171,8 @@ public sealed class StageSave
             throw new ArgumentException("This object has attached saved state and is view-only in this pass.");
         var source = GetCells(part.Bounds);
         var bounds = info.GetBounds(x, y, z, direction);
+        if (IsInterior(part.Bounds) || IsInterior(bounds))
+            throw new ArgumentException("Interior furniture is view-only.");
         var target = GetCells(bounds);
         var cell = source.Values.First();
         if ((cell & 0x7FF) != 0x7FF || (cell & ~0x1F07FFu) != 0 ||

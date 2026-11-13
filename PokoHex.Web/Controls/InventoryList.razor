@@ -1,12 +1,15 @@
 <div class="table-scroll">
-    <table class="inventory"><thead><tr><th>Slot</th><th></th><th>Item</th><th>Count</th></tr></thead><tbody>
-        @for (int i = 0; i < Count; i++)
+    <table class="inventory"><thead><tr>
+        <th aria-sort="@GetSort(0)"><button class="sort-button" @onclick="() => SortItems(0)">Slot @GetSortMark(0)</button></th><th></th>
+        <th aria-sort="@GetSort(2)"><button class="sort-button" @onclick="() => SortItems(2)">Item @GetSortMark(2)</button></th>
+        <th aria-sort="@GetSort(3)"><button class="sort-button" @onclick="() => SortItems(3)">Count @GetSortMark(3)</button></th><th>Paint</th>
+    </tr></thead><tbody>
+        @foreach (var slot in Slots)
         {
-            var slot = Start + i;
             var item = SAV.Inventory[slot];
             <tr @key="slot" class="@(SelectedSlot == slot ? "selected" : "")" aria-selected="@(SelectedSlot == slot)">
-                <td>@(i + 1)</td><td><Sprite Source="@SpriteUtil.GetItem(item.ItemId)" /></td>
-                <td><button class="row-button" @onclick="() => SelectedSlotChanged.InvokeAsync(slot)">@SpriteUtil.GetItemName(item.ItemId)</button></td><td>@item.Count</td>
+                <td>@(slot - Start + 1)</td><td><Sprite Source="@SpriteUtil.GetItem(item.ItemId)" /></td>
+                <td><button class="row-button" @onclick="() => SelectedSlotChanged.InvokeAsync(slot)">@SpriteUtil.GetItemName(item.ItemId)</button></td><td>@item.Count</td><td>@ItemPaintInfo.GetDescription(item)</td>
             </tr>
         }
     </tbody></table>
@@ -19,9 +22,37 @@
     [Parameter] public int Revision { get; set; }
     [Parameter] public int Language { get; set; }
     [Parameter] public EventCallback<int> SelectedSlotChanged { get; set; }
-    private (SaveFile Save, int Start, int Slot, int Revision, GameStrings Strings)? LastRender;
+    private int SortColumn;
+    private bool SortDescending;
+    private (SaveFile Save, int Start, int Slot, int Revision, GameStrings Strings, int Sort, bool Descending)? LastRender;
     private int Count => Start == 0 ? SaveLayout.MainInventoryCount : SAV.Inventory.Length - Start;
-    private (SaveFile, int, int, int, GameStrings) GetRenderState() => (SAV, Start, SelectedSlot, Revision, GameInfo.Strings);
+    private (SaveFile, int, int, int, GameStrings, int, bool) GetRenderState() => (SAV, Start, SelectedSlot, Revision, GameInfo.Strings, SortColumn, SortDescending);
+    private IEnumerable<int> Slots
+    {
+        get
+        {
+            var slots = Enumerable.Range(Start, Count);
+            if (SortColumn == 0)
+                return SortDescending ? slots.OrderByDescending(z => z) : slots;
+            var order = slots.OrderBy(z => SAV.Inventory[z].IsEmpty);
+            if (SortColumn == 2)
+                order = SortDescending
+                    ? order.ThenByDescending(z => SAV.Inventory[z].IsEmpty ? string.Empty : SpriteUtil.GetItemName(SAV.Inventory[z].ItemId), StringComparer.CurrentCultureIgnoreCase)
+                    : order.ThenBy(z => SAV.Inventory[z].IsEmpty ? string.Empty : SpriteUtil.GetItemName(SAV.Inventory[z].ItemId), StringComparer.CurrentCultureIgnoreCase);
+            else
+                order = SortDescending
+                    ? order.ThenByDescending(z => SAV.Inventory[z].IsEmpty ? 0 : SAV.Inventory[z].Count)
+                    : order.ThenBy(z => SAV.Inventory[z].IsEmpty ? 0 : SAV.Inventory[z].Count);
+            return order.ThenBy(z => z);
+        }
+    }
+    private void SortItems(int column)
+    {
+        SortDescending = SortColumn == column && !SortDescending;
+        SortColumn = column;
+    }
+    private string GetSort(int column) => SortColumn != column ? "none" : SortDescending ? "descending" : "ascending";
+    private string GetSortMark(int column) => SortColumn != column ? string.Empty : SortDescending ? "▼" : "▲";
     protected override bool ShouldRender() => LastRender != GetRenderState();
     protected override void OnAfterRender(bool firstRender) => LastRender = GetRenderState();
 }

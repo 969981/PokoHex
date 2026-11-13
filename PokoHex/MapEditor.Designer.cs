@@ -7,6 +7,9 @@ namespace PokoHex;
 partial class MapEditor
 {
     private IContainer components = null!;
+    private ComboBox CB_Interior = null!;
+    private Button B_Interiors = null!;
+    private CheckBox CHK_VisibleOnly = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -52,9 +55,13 @@ partial class MapEditor
         B_Set = new Button();
         B_Undo = new Button();
         B_Redo = new Button();
+        CB_Interior = new ComboBox();
+        B_Interiors = new Button();
+        CHK_VisibleOnly = new CheckBox();
+        var interior = new Label();
         SuspendLayout();
         filters.Dock = DockStyle.Top;
-        filters.Height = 92;
+        filters.Height = 126;
         area.Text = "Area:";
         area.Location = new Point(4, 10);
         area.Size = new Size(46, 20);
@@ -70,7 +77,7 @@ partial class MapEditor
         CB_Chunk.Location = new Point(366, 6);
         CB_Chunk.Size = new Size(220, 23);
         CB_Chunk.DropDownStyle = ComboBoxStyle.DropDownList;
-        CB_Chunk.SelectedIndexChanged += View_Changed;
+        CB_Chunk.SelectedIndexChanged += CB_Chunk_SelectedIndexChanged;
         height.Text = "Layer Y:";
         height.Location = new Point(4, 42);
         height.Size = new Size(58, 20);
@@ -93,10 +100,28 @@ partial class MapEditor
         TB_Search.Location = new Point(366, 38);
         TB_Search.Size = new Size(220, 23);
         TB_Search.TextChanged += TB_Search_TextChanged;
-        L_Count.Location = new Point(4, 69);
+        interior.Text = "Interior:";
+        interior.Location = new Point(4, 77);
+        interior.Size = new Size(62, 20);
+        CB_Interior.Name = "CB_Interior";
+        CB_Interior.Location = new Point(70, 72);
+        CB_Interior.Size = new Size(516, 23);
+        CB_Interior.DropDownStyle = ComboBoxStyle.DropDownList;
+        CB_Interior.SelectedIndexChanged += CB_Interior_SelectedIndexChanged;
+        B_Interiors.Name = "B_Interiors";
+        B_Interiors.Text = "Interiors";
+        B_Interiors.Location = new Point(600, 70);
+        B_Interiors.Size = new Size(136, 28);
+        B_Interiors.Click += B_Interiors_Click;
+        CHK_VisibleOnly.Name = "CHK_VisibleOnly";
+        CHK_VisibleOnly.Text = "Only visible objects";
+        CHK_VisibleOnly.Location = new Point(600, 38);
+        CHK_VisibleOnly.Size = new Size(180, 24);
+        CHK_VisibleOnly.CheckedChanged += View_Changed;
+        L_Count.Location = new Point(4, 103);
         L_Count.Size = new Size(880, 20);
         L_Count.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
-        filters.Controls.AddRange([area, CB_Area, chunk, CB_Chunk, height, NUD_Height, CHK_AllHeights, search, TB_Search, L_Count]);
+        filters.Controls.AddRange([area, CB_Area, chunk, CB_Chunk, height, NUD_Height, CHK_AllHeights, search, TB_Search, interior, CB_Interior, B_Interiors, CHK_VisibleOnly, L_Count]);
         split.Dock = DockStyle.Fill;
         split.Size = new Size(920, 550);
         split.SplitterDistance = 550;

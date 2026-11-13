@@ -10,6 +10,18 @@ namespace PokoHex.Tests;
 public static class DumpTests
 {
     [Fact]
+    public static void ReadPaintAndBuildingTables()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        Assert.Equal(GamePaintDumper.GetPaintList(path!), ResourceUtil.GetBinaryResource("item_paint.bin"));
+        Assert.Equal(GameBuildingDumper.GetBuildingList(path!), ResourceUtil.GetBinaryResource("map_buildings.bin"));
+        Assert.Equal(3, ItemPaintInfo.GetColorCount(1510));
+        Assert.True(ItemPaintInfo.AllowsPattern(1510));
+        Assert.Equal(1870, MapBuildingInfo.Get(31).ItemId);
+    }
+
+    [Fact]
     public static void ReadArchiveEntries()
     {
         var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");

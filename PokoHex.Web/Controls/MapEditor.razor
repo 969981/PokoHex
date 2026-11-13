@@ -9,14 +9,23 @@
                 <option value="@area">@SpriteUtil.GetAreaName(area)</option>
             }
         </select></label>
-        <label>Region:<select @bind="Chunk" disabled="@(Stage == null || Loading)">
+        <label>Region:<select @bind:get="Chunk" @bind:set="CB_Chunk_Changed" disabled="@(Stage == null || Loading)">
             @foreach (var chunk in Stage?.Chunks ?? [])
             {
                 <option value="@chunk">X @((chunk & 63) * 32) / Z @((chunk >> 6) * 32)</option>
             }
         </select></label>
-        <label>Height:<input type="number" min="0" max="127" @bind="Height" @bind:event="oninput" @bind:after="NotifyChanged" /></label>
-        <label class="check"><input type="checkbox" @bind="AllHeights" @bind:after="NotifyChanged" />All heights</label>
+        <label>Height:<input type="number" min="0" max="127" @bind="Height" @bind:event="oninput" @bind:after="View_Changed" /></label>
+        <label class="check"><input type="checkbox" @bind="AllHeights" @bind:after="View_Changed" />All heights</label>
+        <label>Interior:<select @bind:get="InteriorId" @bind:set="CB_Interior_Changed" disabled="@(Interior == null || Loading)">
+            @if (Interior == null) { <option value="0">None</option> }
+            @foreach (var room in Stage?.Interiors.Where(z => z.Chunk == Chunk) ?? [])
+            {
+                <option value="@room.Id">@room</option>
+            }
+        </select></label>
+        <button @onclick="B_Interiors_Click" disabled="@(Stage?.Interiors.Length is not > 0 || Loading)">Interiors</button>
+        <label class="check"><input type="checkbox" @bind="VisibleOnly" @bind:after="View_Changed" />Only visible objects</label>
         <button @onclick="B_Undo_Click" disabled="@(Stage?.CanUndo != true)">Undo</button>
         <button @onclick="B_Redo_Click" disabled="@(Stage?.CanRedo != true)">Redo</button>
     </div>
@@ -42,14 +51,14 @@
                         var bounds = GetVisibleBounds(part);
                         var rect = GetRectangle(bounds);
                         var size = Math.Min(36, Math.Min(rect.Width, rect.Height));
-                        <g @key="part.Index"><title>@PartText(part)</title><rect x="@rect.X" y="@rect.Z" width="@rect.Width" height="@rect.Height" fill="@(part.Info.CanEdit ? "#b0c4de99" : "#d3d3d399")" stroke="#888" />
+                        <g @key="part.Index"><title>@PartText(part)</title><rect x="@rect.X" y="@rect.Z" width="@rect.Width" height="@rect.Height" fill="@(Stage.CanEdit(part) ? "#b0c4de99" : "#d3d3d399")" stroke="#888" />
                             @if (SpriteUtil.GetItem(part.Info.ItemId) is { } image)
                             {
                                 <image href="@image" x="@(rect.X + (rect.Width - size) / 2)" y="@(rect.Z + (rect.Height - size) / 2)" width="@size" height="@size" />
                             }
                         </g>
                     }
-                    @if (SelectedPart is { } selected)
+                    @if (SelectedPart is { } selected && IsVisible(selected))
                     {
                         var rect = GetRectangle(GetVisibleBounds(selected));
                         <rect x="@rect.X" y="@rect.Z" width="@rect.Width" height="@rect.Height" class="selected-footprint" />
@@ -76,18 +85,18 @@
                     <fieldset class="map-details"><legend>Selected object</legend>
                         <div class="item-preview"><Sprite Source="@SpriteUtil.GetItem(MapPartInfo.Get(Variation).ItemId)" /><strong>@SpriteUtil.GetItemName(MapPartInfo.Get(Variation).ItemId)</strong></div>
                         <label for="map-item">Replacement:</label>
-                        <select @key="GameInfo.Strings" id="map-item" @bind="Variation" disabled="@(!detailPart.Info.CanEdit)">
+                        <select @key="GameInfo.Strings" id="map-item" @bind="Variation" disabled="@(!CanEdit)">
                             @foreach (var choice in Choices)
                             {
                                 <option value="@choice.Value">@SpriteUtil.GetItemName(choice.ItemId) (@choice.Value.ToString("D4"))</option>
                             }
                         </select>
                         <div class="coordinates">
-                            <label>X:<input type="number" min="0" max="2047" @bind="X" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!detailPart.Info.CanEdit)" /></label>
-                            <label>Y:<input type="number" min="0" max="127" @bind="Y" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!detailPart.Info.CanEdit)" /></label>
-                            <label>Z:<input type="number" min="0" max="2047" @bind="Z" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!detailPart.Info.CanEdit)" /></label>
+                            <label>X:<input type="number" min="0" max="2047" @bind="X" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!CanEdit)" /></label>
+                            <label>Y:<input type="number" min="0" max="127" @bind="Y" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!CanEdit)" /></label>
+                            <label>Z:<input type="number" min="0" max="2047" @bind="Z" @bind:event="oninput" @bind:after="NotifyChanged" disabled="@(!CanEdit)" /></label>
                         </div>
-                        <label>Direction:<select @bind="Direction" disabled="@(!detailPart.Info.CanEdit)"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+                        <label>Direction:<select @bind="Direction" disabled="@(!CanEdit)"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
                         <p>Item @MapPartInfo.Get(Variation).ItemId.ToString("D4") / Part @Variation.ToString("D4")<br />Size: @PendingBounds?.Width X, @PendingBounds?.Height Y, @PendingBounds?.Depth Z</p>
                         <p class="muted" role="status">@(EditError ?? (HasChanges ? "Press Set to place." : "Choose coordinates or right-click a map cell."))</p>
                         <div class="buttons"><button class="primary" @onclick="B_Set_Click" disabled="@(EditError != null || !HasChanges)">Set</button></div>

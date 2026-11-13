@@ -11,6 +11,87 @@
         <p>@(InventoryStart == 0 ? "Slot" : "Secondary bar slot") @(SelectedSlot - InventoryStart + 1) of @InventoryCount</p>
         <ItemSelect Choices="Choices" Value="ItemId" ValueChanged="CB_Item_Changed" Language="Language" />
         <label for="item-count">Count:</label><input id="item-count" type="number" min="0" max="255" @bind="Count" @bind:event="oninput" @bind:after="NotifyChanged" />
+        @if (PaintCount != 0)
+        {
+            <fieldset class="item-paint"><legend>Paint</legend>
+                @if (!GalleryOpen)
+                {
+                    <label>Color 1:<select @bind="Color1" @bind:after="NotifyChanged" disabled="@(Pattern != 0)">
+                        @for (int i = 0; i <= ItemPaintInfo.ColorCount; i++)
+                        {
+                            <option value="@i">@ItemPaintInfo.GetColorName(i)</option>
+                        }
+                        @if (Color1 > ItemPaintInfo.ColorCount) { <option value="@Color1">@ItemPaintInfo.GetColorName(Color1)</option> }
+                    </select>
+                        @if (SpriteUtil.GetPaint(Color1) is { } color1Image) { <img class="paint-preview" src="@color1Image" alt="@ItemPaintInfo.GetColorName(Color1)" /> }</label>
+                    @if (PaintCount > 1)
+                    {
+                        <label>Color 2:<select @bind="Color2" @bind:after="NotifyChanged">
+                            @for (int i = 0; i <= ItemPaintInfo.ColorCount; i++)
+                            {
+                                <option value="@i">@ItemPaintInfo.GetColorName(i)</option>
+                            }
+                            @if (Color2 > ItemPaintInfo.ColorCount) { <option value="@Color2">@ItemPaintInfo.GetColorName(Color2)</option> }
+                        </select>
+                        @if (SpriteUtil.GetPaint(Color2) is { } color2Image) { <img class="paint-preview" src="@color2Image" alt="@ItemPaintInfo.GetColorName(Color2)" /> }</label>
+                    }
+                    @if (PaintCount > 2)
+                    {
+                        <label>Color 3:<select @bind="Color3" @bind:after="NotifyChanged">
+                            @for (int i = 0; i <= ItemPaintInfo.ColorCount; i++)
+                            {
+                                <option value="@i">@ItemPaintInfo.GetColorName(i)</option>
+                            }
+                            @if (Color3 > ItemPaintInfo.ColorCount) { <option value="@Color3">@ItemPaintInfo.GetColorName(Color3)</option> }
+                        </select>
+                        @if (SpriteUtil.GetPaint(Color3) is { } color3Image) { <img class="paint-preview" src="@color3Image" alt="@ItemPaintInfo.GetColorName(Color3)" /> }</label>
+                    }
+                    @if (AllowsPattern || Pattern != 0)
+                    {
+                        <label>Pattern:<select @bind="Pattern" @bind:after="NotifyChanged">
+                            <option value="0">None</option>
+                            @if (AllowsPattern)
+                            {
+                                @for (int i = 1; i <= ItemPaintInfo.PatternCount; i++)
+                                {
+                                    <option value="@i">Pattern @i</option>
+                                }
+                            }
+                            @if (Pattern > ItemPaintInfo.PatternCount || !AllowsPattern && Pattern != 0) { <option value="@Pattern">Unknown (@Pattern)</option> }
+                        </select>
+                        @if (Pattern is > 0 and <= ItemPaintInfo.PatternCount) { <img class="pattern-preview" src="@($"images/patterns/pattern_{Pattern}.png")" alt="@($"Pattern {Pattern}")" /> }
+                        </label>
+                    }
+                }
+                <div class="paint-gallery">
+                    <button type="button" aria-expanded="@GalleryOpen" @onclick="() => GalleryOpen = !GalleryOpen">@(GalleryOpen ? "Hide gallery" : "Gallery")</button>
+                    @if (GalleryOpen)
+                    {
+                        <label>Area:<select @bind="PaintArea">
+                            @for (int i = 0; i < PaintCount; i++)
+                            {
+                                <option value="@i">Color @(i + 1)</option>
+                            }
+                            @if (AllowsPattern || Pattern != 0) { <option value="3">Pattern</option> }
+                        </select></label>
+                        <div class="paint-swatches" role="group" aria-label="@((PaintArea == 3 ? "Patterns" : $"Color {PaintArea + 1}"))">
+                            @for (int i = 0; i <= SwatchCount; i++)
+                            {
+                                var value = (ushort)i;
+                                var name = GetSwatchName(value);
+                                <button type="button" class="@(SelectedSwatch == value ? "selected" : null)" aria-label="@name" aria-pressed="@(SelectedSwatch == value)" title="@name" @onclick="() => SelectSwatch(value)">
+                                    @if (value != 0)
+                                    {
+                                        <img src="@(PaintArea == 3 ? $"images/patterns/pattern_{value}.png" : SpriteUtil.GetPaint(value))" alt="" loading="lazy" decoding="async" />
+                                    }
+                                    <span>@(PaintArea == 3 && value != 0 ? value.ToString() : name)</span>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </fieldset>
+        }
         <div class="buttons"><button class="primary" @onclick="B_Set_Click">Set</button><button @onclick="B_Clear_Click">Clear</button></div>
         <p class="muted">@((GameInfo.Strings.ItemDataSource.Length - 1).ToString("N0")) items are available.</p>
     </fieldset>
