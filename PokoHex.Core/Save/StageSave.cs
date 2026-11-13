@@ -56,7 +56,7 @@ public sealed class StageSave
                 throw new InvalidDataException("The map point reference is invalid.");
             var point = ReadUInt32LittleEndian(raw.AsSpan(Points + handle * 4));
             var part = new MapPart(i, raw.AsMemory(offset, MapPart.SIZE), raw.AsMemory(Points + handle * 4, 4));
-            if ((point >> 12) != i || part.Link != uint.MaxValue && part.Link >= count)
+            if ((point >> 12) != i)
                 throw new InvalidDataException("The map part reference is invalid.");
             if (part.Variation == 0)
                 continue;
@@ -65,12 +65,8 @@ public sealed class StageSave
             parts.Add(part);
         }
         Parts = parts.ToArray();
-        var byIndex = Parts.ToDictionary(z => z.Index);
-        foreach (var part in Parts)
-        {
-            if (part.Link != uint.MaxValue && (!byIndex.TryGetValue((int)part.Link, out var link) || link.Chunk != part.Chunk || link.Index >= part.Index))
-                throw new InvalidDataException("The map part chain is invalid.");
-        }
+        // Saved links can be stale after pool compaction. The native loader rebuilds
+        // them from point references; preserve them without following them here.
     }
 
     private int GetSlot(int chunk) => ReadUInt16LittleEndian(Raw.AsSpan(ChunkMap + chunk * 2));
