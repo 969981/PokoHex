@@ -6622,4 +6622,223 @@
   <data name="paint_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Paint\paint_18.png;System.Drawing.Bitmap, System.Drawing.Common</value>
   </data>
+  <data name="photo_frame_00" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_00.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_01.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_01.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_02.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_02.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_03.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_03.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_04.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_04.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_05.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_05.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_06.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_06.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_07.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_07.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_08.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_08.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_09" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_09.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_09" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_09.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_10.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_10.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_11.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_11.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_12.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_12.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_13.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_13.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_14.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_14.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_15.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_15.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_16.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_16.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_17" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_17.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_17" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_17.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_18.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_18.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_19" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_19.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_19" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_19.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_20.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_20.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_21.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_21.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_22.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_22.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_23.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_23.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_24.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_24.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_25" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_25.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_25" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_25.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_26.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_26.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_27" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_27.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_27" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_27.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_29" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_29.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_29" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_29.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_30" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_30.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_30" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_30.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_frame_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_31.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_frame_full_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_frame_full_31.png;System.Byte[], mscorlib</value>
+  </data>
+  <data name="photo_filter_00" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_00.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_01.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_02.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_03.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_04.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_05.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_06.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_07.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_filter_08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_filter_08.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_camera" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_camera.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_empty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_empty.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
+  <data name="photo_unavailable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Photo\photo_unavailable.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
 </root>

@@ -13,7 +13,7 @@ namespace PokoHex.Web;
 
 public partial class Main : IAsyncDisposable
 {
-    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags"];
+    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Photo Ops"];
     private static readonly string[] LanguageNames = ["English", "日本語", "Deutsch", "Español", "Français", "Italiano", "한국어", "简体中文", "繁體中文"];
     private SaveFolder? SAV;
     private InventoryEditor? Editor_Items;
@@ -35,16 +35,17 @@ public partial class Main : IAsyncDisposable
     private int Language;
     private bool Busy;
     private bool MapOpened;
+    private bool PhotosOpened;
     private bool? BrowserDirty;
     private RenderState? LastRender;
     private readonly record struct RenderState(SaveFolder? Save, string Name, string SaveName, string Tab, string PlayerSection,
-        string Status, string Error, int Language, bool Busy, bool MapOpened, bool Dirty);
+        string Status, string Error, int Language, bool Busy, bool MapOpened, bool PhotosOpened, bool Dirty);
     private bool HasChanges => SAV != null && (PlayerName != SAV.Common.PlayerName ||
         SAV.Common.LifeCoinsEditable && LifeCoins != SAV.Common.LifeCoins ||
         Editor_Items?.HasChanges == true || Editor_Villagers?.HasChanges == true || Editor_Map?.HasChanges == true ||
         Editor_Skills?.HasChanges == true || Editor_Reactions?.HasChanges == true || Editor_Flags?.HasChanges == true || SAV.IsEdited);
 
-    private RenderState GetRenderState() => new(SAV, PlayerName, SaveName, SelectedTab, PlayerSection, Status, Error, Language, Busy, MapOpened, HasChanges);
+    private RenderState GetRenderState() => new(SAV, PlayerName, SaveName, SelectedTab, PlayerSection, Status, Error, Language, Busy, MapOpened, PhotosOpened, HasChanges);
     protected override bool ShouldRender() => LastRender != GetRenderState();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -127,6 +128,7 @@ public partial class Main : IAsyncDisposable
         Editor_Reactions = null;
         Editor_Flags = null;
         MapOpened = false;
+        PhotosOpened = false;
         SelectedTab = "Player";
         PlayerSection = "Skills";
         Status = $"Loaded: {PlayerName}.";
@@ -164,6 +166,7 @@ public partial class Main : IAsyncDisposable
             SelectedTab = tab;
             PlayerSection = section;
             MapOpened = tab == "Map";
+            PhotosOpened = tab == "Photo Ops";
             Status = "Exported and verified: PokoHex-edited.zip.";
         });
     }
@@ -175,6 +178,7 @@ public partial class Main : IAsyncDisposable
             Editor_Flags?.SaveChanges();
             SelectedTab = tab;
             MapOpened |= tab == "Map";
+            PhotosOpened |= tab == "Photo Ops";
         }
         catch (ArgumentException ex) { ShowError(ex.Message); }
     }

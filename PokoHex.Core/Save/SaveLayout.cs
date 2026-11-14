@@ -6,7 +6,7 @@ public sealed class SaveLayout
 {
     public const int MainInventoryCount = 120;
     public static readonly SaveLayout Version70 = new(0x02000046, 0x3EF3DC, 0x3ECF92, 0x3ED7C1); // 1.0.4
-    public static readonly SaveLayout Version381 = new(0x0200017D, 0x470CED, 0x46E0E5, 0x46ECEA, 1050, 0x79824, 0x405047, 0x220F04, 0x46D080); // 2.0.1
+    public static readonly SaveLayout Version381 = new(0x0200017D, 0x470CED, 0x46E0E5, 0x46ECEA, 1050, 0x79824, 0x405047, 0x220F04, 0x46D080, 0x467E5E); // 2.0.1
 
     public uint Version { get; }
     public int DataSize { get; }
@@ -22,7 +22,9 @@ public sealed class SaveLayout
     public int PlayerAbilitiesOffset { get; }
     public int FunctionFlagsOffset { get; }
     public int LifeCoinsOffset { get; }
-    private SaveLayout(uint version, int dataSize, int playerNameOffset, int inventoryOffset, int villagerCount = 0, int villagerHomeOffset = 0, int playerAbilitiesOffset = 0, int functionFlagsOffset = 0, int lifeCoinsOffset = 0)
+    public int PhotoHistoryOffset { get; }
+    public int PhotoStyleOffset => PhotoHistoryOffset == 0 ? 0 : PhotoHistoryOffset + PhotoHistory.SIZE;
+    private SaveLayout(uint version, int dataSize, int playerNameOffset, int inventoryOffset, int villagerCount = 0, int villagerHomeOffset = 0, int playerAbilitiesOffset = 0, int functionFlagsOffset = 0, int lifeCoinsOffset = 0, int photoHistoryOffset = 0)
     {
         Version = version;
         DataSize = dataSize;
@@ -33,6 +35,7 @@ public sealed class SaveLayout
         PlayerAbilitiesOffset = playerAbilitiesOffset;
         FunctionFlagsOffset = functionFlagsOffset;
         LifeCoinsOffset = lifeCoinsOffset;
+        PhotoHistoryOffset = photoHistoryOffset;
     }
 
     internal static SaveLayout GetLayout(uint version) => version switch

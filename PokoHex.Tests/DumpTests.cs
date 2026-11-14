@@ -10,6 +10,56 @@ namespace PokoHex.Tests;
 public static class DumpTests
 {
     [Fact]
+    public static void ReadPhotoOpTables()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var strings = GameInfo.GetStrings(language);
+            Assert.Equal(GamePhotoDumper.GetPhotoOpList(path!, language), strings.photooplist);
+            Assert.Equal(GamePhotoDumper.GetFrameList(path!, language), strings.photoframelist);
+            Assert.Equal(GamePhotoDumper.GetFilterList(path!, language), strings.photofilterlist);
+            Assert.Equal(50, strings.PhotoOpDataSource.Length);
+            Assert.Equal(31, strings.PhotoFrameDataSource.Length);
+            Assert.Equal(9, strings.PhotoFilterDataSource.Length);
+        }
+    }
+
+    [Fact]
+    public static void ReadPhotoSave()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_SAVE_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_SAVE_PATH to a save folder.");
+        var file = Path.Combine(path!, "G00", "SCSHDAT.BIN");
+        Assert.SkipUnless(File.Exists(file), "The save folder has no photo file.");
+        var original = File.ReadAllBytes(file);
+        var photos = ScreenshotSave.Read(original);
+        Assert.Equal(ScreenshotSave.SlotCount, photos.Entries.Length);
+        Assert.Equal(original, photos.Write());
+        Assert.Equal(original, File.ReadAllBytes(file));
+    }
+
+    [Fact]
+    public static void DumpPhotoOpResources()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        var destination = Environment.GetEnvironmentVariable("POKOHEX_RESOURCE_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        Assert.SkipUnless(!string.IsNullOrWhiteSpace(destination), "Set POKOHEX_RESOURCE_PATH to the resource output folder.");
+        GamePhotoDumper.UpdateDumps(path!, destination!);
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var file = Path.Combine(destination!, "text", language, $"text_photoop_{language}.txt");
+            Assert.Equal(GamePhotoDumper.GetPhotoOpList(path!, language), File.ReadAllLines(file));
+            Assert.Equal(GamePhotoDumper.GetFrameList(path!, language), File.ReadAllLines(Path.Combine(destination!, "text", language, $"text_photoframe_{language}.txt")));
+            Assert.Equal(GamePhotoDumper.GetFilterList(path!, language), File.ReadAllLines(Path.Combine(destination!, "text", language, $"text_photofilter_{language}.txt")));
+        }
+    }
+
+    [Fact]
     public static void ReadPaintAndBuildingTables()
     {
         var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");

@@ -15,9 +15,9 @@ window.pokohex = {
         const local = point.matrixTransform(element.getScreenCTM().inverse());
         return [Math.floor(local.x / 16), Math.floor(local.y / 16)];
     },
-    async download(name, stream) {
+    async download(name, stream, type = "application/zip") {
         const data = await stream.arrayBuffer();
-        const url = URL.createObjectURL(new Blob([data], { type: "application/zip" }));
+        const url = URL.createObjectURL(new Blob([data], { type }));
         const link = document.createElement("a");
         link.href = url;
         link.download = name;

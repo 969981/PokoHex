@@ -33,6 +33,7 @@ partial class Main
         var villagers = new TabPage("Villagers");
         var map = new TabPage("Map");
         var flags = new TabPage("Flags");
+        var photos = new TabPage("Photo Ops");
         var playerHeader = new Panel();
         var playerSections = new FlowLayoutPanel();
         RB_Skills = new RadioButton();
@@ -40,6 +41,7 @@ partial class Main
         Editor_Villagers = new VillagerEditor { Dock = DockStyle.Fill };
         Editor_Map = new MapEditor { Dock = DockStyle.Fill };
         Editor_Flags = new FlagEditor { Dock = DockStyle.Fill };
+        Editor_Photos = new PhotoOpEditor { Dock = DockStyle.Fill };
         Editor_Skills = new AbilityEditor { Dock = DockStyle.Fill };
         Editor_Reactions = new AbilityEditor { Reactions = true, Dock = DockStyle.Fill, Visible = false };
         L_Coins = new Label();
@@ -76,9 +78,10 @@ partial class Main
         L_Status.Text = "Open a save folder to begin.";
         TC_Editor.Dock = DockStyle.Fill;
         TC_Editor.Enabled = false;
-        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags]);
+        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, photos]);
         TC_Editor.SelectedIndexChanged += TC_Editor_SelectedIndexChanged;
         flags.Controls.Add(Editor_Flags);
+        photos.Controls.Add(Editor_Photos);
         villagers.Controls.Add(Editor_Villagers);
         map.Controls.Add(Editor_Map);
         player.Padding = new Padding(8);
@@ -241,6 +244,7 @@ partial class Main
     private VillagerEditor Editor_Villagers = null!;
     private MapEditor Editor_Map = null!;
     private FlagEditor Editor_Flags = null!;
+    private PhotoOpEditor Editor_Photos = null!;
     private AbilityEditor Editor_Skills = null!;
     private AbilityEditor Editor_Reactions = null!;
     private RadioButton RB_Skills = null!;

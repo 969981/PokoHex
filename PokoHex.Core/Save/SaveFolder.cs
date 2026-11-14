@@ -11,8 +11,9 @@ public sealed class SaveFolder
     public SaveFile Common { get; }
     private readonly Dictionary<string, byte[]> Files;
     private readonly Dictionary<int, StageSave> Stages = [];
+    private PhotoOps? Photos;
     public int[] StageIds { get; }
-    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited);
+    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited) || Photos?.Screenshots.IsEdited == true;
 
     private SaveFolder(string folder, Dictionary<string, byte[]> files)
     {
@@ -34,6 +35,18 @@ public sealed class SaveFolder
         stage = StageSave.Read(Files[Path.Combine("G00", $"STGDAT{area:D2}.BIN")]);
         Stages.Add(area, stage);
         return stage;
+    }
+
+    public PhotoOps GetPhotoOps()
+    {
+        if (Photos != null)
+            return Photos;
+        if (Common.Photos == null)
+            throw new InvalidDataException("Photo Ops aren’t available for this save version.");
+        if (!Files.TryGetValue(Path.Combine("G00", "SCSHDAT.BIN"), out var data))
+            throw new InvalidDataException("The photo file is missing.");
+        Photos = new PhotoOps(Common.Photos, ScreenshotSave.Read(data));
+        return Photos;
     }
 
     public static SaveFolder Read(string path)
@@ -104,6 +117,14 @@ public sealed class SaveFolder
         {
             [Path.Combine("G00", "CMNDAT.BIN")] = common,
         };
+        if (Photos?.Screenshots.IsEdited == true)
+        {
+            var data = Photos.Screenshots.Write();
+            var verified = ScreenshotSave.Read(data);
+            if (!verified.Data.Span.SequenceEqual(Photos.Screenshots.Data.Span))
+                throw new InvalidDataException("The edited photos could not be verified.");
+            edited.Add(Path.Combine("G00", "SCSHDAT.BIN"), data);
+        }
         foreach (var (area, stage) in Stages.Where(z => z.Value.IsEdited))
         {
             var data = stage.Write();
