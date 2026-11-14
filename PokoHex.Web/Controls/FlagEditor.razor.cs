@@ -94,6 +94,21 @@ public partial class FlagEditor
     private Task TB_Search_Changed(string? value) => FilterChanged(() => Search = value ?? string.Empty);
     private Task CHK_Known_Changed(bool value) => FilterChanged(() => KnownOnly = value);
 
+    private async Task CHK_Flag_Changed(int index, bool value)
+    {
+        if (Flags == null || !Entries.Contains(index))
+            return;
+        try
+        {
+            SaveChanges();
+            SelectedFlag = index;
+            Flags.SetFlag(index, value);
+            LoadFlag();
+            await NotifyChanged();
+        }
+        catch (ArgumentException ex) { Error(ex.Message); }
+    }
+
     private async Task FilterChanged(Action change)
     {
         try

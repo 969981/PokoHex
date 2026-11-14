@@ -15,6 +15,7 @@ public partial class MapEditor : UserControl
     private bool Loading;
     private int SelectedArea = -1;
     private int Chunk;
+    private MapInterior? Interior => CB_Interior.SelectedItem as MapInterior;
     private sealed record MapEntry(MapPart Part, string Text);
 
     public MapEditor() => InitializeComponent();
@@ -67,10 +68,12 @@ public partial class MapEditor : UserControl
         var y = NUD_Y.Value;
         var z = NUD_Z.Value;
         var direction = CB_Direction.SelectedIndex;
+        var interior = Interior?.Id ?? 0;
         Loading = true;
         TB_Search.Clear();
         BindAreas();
         CB_Area.SelectedIndex = area;
+        BindInteriors(interior);
         Loading = false;
         LoadParts(false);
         Loading = true;
@@ -90,6 +93,7 @@ public partial class MapEditor : UserControl
         SelectedPart = null;
         Loading = true;
         CB_Chunk.Items.Clear();
+        CB_Interior.DataSource = null;
         try
         {
             if (SAV != null && SelectedArea >= 0)
@@ -100,6 +104,7 @@ public partial class MapEditor : UserControl
                 CB_Chunk.DisplayMember = nameof(ItemInfo.Text);
                 CB_Chunk.SelectedIndex = 0;
                 Chunk = ((ItemInfo)CB_Chunk.SelectedItem!).Value;
+                BindInteriors(0);
             }
             L_Count.Text = Stage == null ? "No areas are available." : $"{Stage.Parts.Length:N0} placed objects";
         }
@@ -119,6 +124,7 @@ public partial class MapEditor : UserControl
         var entries = Stage?.Parts.Select(z => new MapEntry(z,
                 $"{GetItemName(z.Info.ItemId)} [{z.X}, {z.Y}, {z.Z}] (#{z.Index})"))
             .Where(z => z.Text.Contains(TB_Search.Text, StringComparison.CurrentCultureIgnoreCase))
+            .Where(z => !CHK_VisibleOnly.Checked && Interior == null || IsVisible(z.Part))
             .OrderBy(z => GetItemName(z.Part.Info.ItemId)).ThenBy(z => z.Part.Index).ToArray() ?? [];
         var selected = SelectedPart;
         LB_Parts.DataSource = entries;
@@ -126,10 +132,11 @@ public partial class MapEditor : UserControl
         LB_Parts.SelectedIndex = Array.FindIndex(entries, z => z.Part == selected);
         if (LB_Parts.SelectedIndex < 0 && entries.Length != 0)
         {
-            var first = Array.FindIndex(entries, z => z.Part.Info.CanEdit);
+            var first = Array.FindIndex(entries, z => Stage?.CanEdit(z.Part) == true);
             LB_Parts.SelectedIndex = first >= 0 ? first : 0;
         }
         SelectedPart = (LB_Parts.SelectedItem as MapEntry)?.Part;
+        L_Count.Text = Stage == null ? "No areas are available." : $"{entries.Length:N0} of {Stage.Parts.Length:N0} placed objects";
         Loading = false;
         LoadPart(center);
     }
@@ -157,12 +164,13 @@ public partial class MapEditor : UserControl
             NUD_Y.Value = part.Y;
             NUD_Z.Value = part.Z;
             CB_Direction.SelectedIndex = part.Direction;
-            CB_Item.Enabled = NUD_X.Enabled = NUD_Y.Enabled = NUD_Z.Enabled = CB_Direction.Enabled = part.Info.CanEdit;
+            CB_Item.Enabled = NUD_X.Enabled = NUD_Y.Enabled = NUD_Z.Enabled = CB_Direction.Enabled = Stage!.CanEdit(part);
             if (center)
             {
                 CB_Chunk.SelectedIndex = Array.FindIndex(Stage!.Chunks, z => z == part.Chunk);
                 Chunk = part.Chunk;
                 NUD_Height.Value = part.Y;
+                BindInteriors(Stage.GetInterior(part)?.Id ?? 0);
             }
         }
         Loading = false;
@@ -194,7 +202,9 @@ public partial class MapEditor : UserControl
         if (SelectedPart != null && Stage != null && CB_Item.SelectedItem is ItemInfo choice)
         {
             var info = MapPartInfo.Get(choice.Value);
-            var bounds = info.GetBounds((int)NUD_X.Value, (int)NUD_Y.Value, (int)NUD_Z.Value, CB_Direction.SelectedIndex);
+            var bounds = Stage.CanEdit(SelectedPart)
+                ? info.GetBounds((int)NUD_X.Value, (int)NUD_Y.Value, (int)NUD_Z.Value, CB_Direction.SelectedIndex)
+                : Stage.GetDisplayBounds(SelectedPart);
             PB_Item.Image = ItemSprite.GetItemSprite(info.ItemId);
             L_Item.Text = GetItemName(info.ItemId);
             L_Details.Text = $"Item {info.ItemId:D4} / Part {info.Value:D4}\r\nSize: {bounds.Width} X, {bounds.Height} Y, {bounds.Depth} Z";
@@ -236,6 +246,8 @@ public partial class MapEditor : UserControl
         }
         SelectedPart = (LB_Parts.SelectedItem as MapEntry)?.Part;
         LoadPart(true);
+        if (Interior != null || CHK_VisibleOnly.Checked)
+            LoadParts(false);
     }
 
     private void TB_Search_TextChanged(object sender, EventArgs e)
@@ -250,7 +262,67 @@ public partial class MapEditor : UserControl
             return;
         if (CB_Chunk.SelectedItem is ItemInfo chunk)
             Chunk = chunk.Value;
+        if ((CHK_VisibleOnly.Checked || Interior != null) && TrySaveChanges())
+            LoadParts(false);
         PB_Map.Invalidate();
+    }
+
+    private void BindInteriors(int selected)
+    {
+        var loading = Loading;
+        Loading = true;
+        var rooms = Stage?.Interiors.Where(z => z.Chunk == Chunk).ToArray() ?? [];
+        CB_Interior.DataSource = rooms;
+        CB_Interior.SelectedIndex = rooms.Length == 0 ? -1 : Math.Max(0, Array.FindIndex(rooms, z => z.Id == selected));
+        CB_Interior.Enabled = rooms.Length != 0;
+        B_Interiors.Enabled = Stage?.Interiors.Length > 0;
+        Loading = loading;
+    }
+
+    private void CB_Chunk_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (Loading || CB_Chunk.SelectedItem is not ItemInfo chunk)
+            return;
+        if (!TrySaveChanges())
+        {
+            Loading = true;
+            CB_Chunk.SelectedIndex = Array.FindIndex(Stage!.Chunks, z => z == Chunk);
+            Loading = false;
+            return;
+        }
+        Chunk = chunk.Value;
+        BindInteriors(0);
+        if (Interior is { } room)
+            NUD_Height.Value = room.Floor + 1;
+        LoadParts(false);
+    }
+
+    private void CB_Interior_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (!Loading && TrySaveChanges())
+        {
+            if (Interior is { } room)
+                NUD_Height.Value = room.Floor + 1;
+            LoadParts(false);
+        }
+    }
+
+    private void B_Interiors_Click(object sender, EventArgs e)
+    {
+        var room = Stage?.Interiors.FirstOrDefault();
+        if (room != null)
+            CB_Chunk.SelectedIndex = Array.FindIndex(Stage!.Chunks, z => z == room.Chunk);
+    }
+
+    private bool IsVisible(MapPart part)
+    {
+        if (Stage == null)
+            return false;
+        var bounds = Stage.GetDisplayBounds(part);
+        if (Interior is { } room && (!room.Contains(part) || part.Y <= room.Floor || part.Y >= room.Ceiling || part.Info.ItemId == 0))
+            return false;
+        return bounds.Intersects(new((Chunk & 63) * 32, 0, (Chunk >> 6) * 32, 32, 128, 32)) &&
+            (CHK_AllHeights.Checked || NUD_Height.Value >= bounds.Y && NUD_Height.Value < bounds.Y + bounds.Height);
     }
 
     private void Placement_Changed(object sender, EventArgs e)
@@ -330,7 +402,8 @@ public partial class MapEditor : UserControl
         using var ground = new SolidBrush(Color.FromArgb(225, 229, 222));
         var x0 = (Chunk & 63) * 32;
         var z0 = (Chunk >> 6) * 32;
-        var layer = (int)NUD_Height.Value;
+        var layer = Interior is { } room && CHK_AllHeights.Checked
+            ? Math.Clamp((int)NUD_Height.Value, room.Floor + 1, room.Ceiling - 1) : (int)NUD_Height.Value;
         for (int z = 0; z < 32; z++)
         for (int x = 0; x < 32; x++)
         {
@@ -343,16 +416,13 @@ public partial class MapEditor : UserControl
             g.DrawLine(grid, map.X + i * CellSize, map.Top, map.X + i * CellSize, map.Bottom);
             g.DrawLine(grid, map.Left, map.Y + i * CellSize, map.Right, map.Y + i * CellSize);
         }
-        var view = new MapBounds(x0, 0, z0, 32, 128, 32);
         foreach (var part in Stage.Parts.OrderBy(z => z.Y).ThenBy(z => z.Index))
         {
-            var bounds = part.Bounds;
-            if (bounds.Width == 0 || bounds.Height == 0 || bounds.Depth == 0)
-                bounds = new MapBounds(part.X, part.Y, part.Z, 1, 1, 1);
-            if (!bounds.Intersects(view) || !CHK_AllHeights.Checked && (layer < bounds.Y || layer >= bounds.Y + bounds.Height))
+            var bounds = Stage.GetDisplayBounds(part);
+            if (!IsVisible(part))
                 continue;
             var rect = GetRectangle(bounds);
-            using var fill = new SolidBrush(Color.FromArgb(110, part.Info.CanEdit ? Color.LightSteelBlue : Color.LightGray));
+            using var fill = new SolidBrush(Color.FromArgb(110, Stage.CanEdit(part) ? Color.LightSteelBlue : Color.LightGray));
             g.FillRectangle(fill, rect);
             g.DrawRectangle(Pens.Gray, rect);
             var image = ItemSprite.GetItemSprite(part.Info.ItemId);
@@ -362,10 +432,10 @@ public partial class MapEditor : UserControl
                 g.DrawImage(image, new Rectangle(rect.X + (rect.Width - size) / 2, rect.Y + (rect.Height - size) / 2, size, size));
             }
         }
-        if (SelectedPart != null)
+        if (SelectedPart != null && IsVisible(SelectedPart))
         {
             using var selected = new Pen(Color.RoyalBlue, 3);
-            g.DrawRectangle(selected, GetRectangle(SelectedPart.Bounds));
+            g.DrawRectangle(selected, GetRectangle(Stage.GetDisplayBounds(SelectedPart)));
             if (HasChanges && CB_Item.SelectedItem is ItemInfo choice && CB_Direction.SelectedIndex >= 0)
             {
                 var bounds = MapPartInfo.Get(choice.Value).GetBounds((int)NUD_X.Value, (int)NUD_Y.Value, (int)NUD_Z.Value, CB_Direction.SelectedIndex);
@@ -395,7 +465,7 @@ public partial class MapEditor : UserControl
     {
         if (!GetMapPosition(e.Location, out var x, out var z) || Stage == null)
             return;
-        if (e.Button == MouseButtons.Right && SelectedPart?.Info.CanEdit == true)
+        if (e.Button == MouseButtons.Right && SelectedPart != null && Stage.CanEdit(SelectedPart))
         {
             Loading = true;
             NUD_X.Value = x;
@@ -406,7 +476,7 @@ public partial class MapEditor : UserControl
         }
         if (e.Button != MouseButtons.Left || !TrySaveChanges())
             return;
-        var part = Stage.Parts.Where(p => p.Bounds.Contains(x, CHK_AllHeights.Checked ? p.Y : (int)NUD_Height.Value, z))
+        var part = Stage.Parts.Where(p => IsVisible(p) && Stage.GetDisplayBounds(p).Contains(x, CHK_AllHeights.Checked ? p.Y : (int)NUD_Height.Value, z))
             .OrderByDescending(p => p.Y).ThenByDescending(p => p.Index).FirstOrDefault();
         if (part == null)
             return;

@@ -14,6 +14,9 @@ public partial class Main : Form
     private bool Loading;
     private int SelectedSlot;
     private int InventoryStart;
+    private int InventorySortColumn;
+    private bool InventorySortDescending;
+    private bool ChangingSlot;
 
     public Main()
     {
@@ -38,7 +41,7 @@ public partial class Main : Form
             if (SAV == null || CB_Item.SelectedItem is not ItemInfo item)
                 return false;
             var slot = SAV.Common.Inventory[SelectedSlot];
-            return slot.ItemId != item.Value || slot.Count != NUD_Count.Value;
+            return slot.ItemId != item.Value || slot.Count != NUD_Count.Value || Editor_Paint.HasChanges;
         }
     }
 
@@ -107,10 +110,12 @@ public partial class Main : Form
             for (int i = 0; i < count; i++)
             {
                 var item = SAV.Common.Inventory[InventoryStart + i];
-                DGV_Items.Rows.Add(i + 1, ItemSprite.GetItemSprite(item.ItemId)!, GetItemName(item.ItemId), item.Count);
+                var row = DGV_Items.Rows[DGV_Items.Rows.Add(i + 1, ItemSprite.GetItemSprite(item.ItemId)!, GetItemName(item.ItemId), item.Count, ItemPaintInfo.GetDescription(item))];
+                row.Tag = InventoryStart + i;
             }
             SelectedSlot = InventoryStart;
             DGV_Items.CurrentCell = DGV_Items.Rows[0].Cells[2];
+            SortInventory();
         }
         finally { Loading = false; }
         LoadSlot();
@@ -154,8 +159,9 @@ public partial class Main : Form
         {
             if (SAV != null)
             {
-                for (int i = 0; i < DGV_Items.Rows.Count; i++)
-                    DGV_Items.Rows[i].Cells[2].Value = GetItemName(SAV.Common.Inventory[InventoryStart + i].ItemId);
+                foreach (DataGridViewRow row in DGV_Items.Rows)
+                    row.Cells[2].Value = GetItemName(SAV.Common.Inventory[(int)row.Tag!].ItemId);
+                SortInventory();
             }
             CB_Item.SelectedValue = itemId;
             NUD_Count.Value = count;
@@ -191,11 +197,14 @@ public partial class Main : Form
             return;
         try
         {
+            ChangingSlot = true;
+            var slot = (int)DGV_Items.CurrentRow.Tag!;
             SaveSlot();
-            SelectedSlot = InventoryStart + DGV_Items.CurrentRow.Index;
+            SelectedSlot = slot;
             LoadSlot();
         }
         catch (ArgumentException ex) { ShowError(ex.Message); }
+        finally { ChangingSlot = false; }
     }
 
     private void LoadSlot()
@@ -206,6 +215,7 @@ public partial class Main : Form
         var item = SAV.Common.Inventory[SelectedSlot];
         CB_Item.SelectedValue = item.ItemId;
         NUD_Count.Value = item.Count;
+        Editor_Paint.LoadItem(item);
         L_Slot.Text = SelectedSlot < SaveLayout.MainInventoryCount
             ? $"Slot {SelectedSlot + 1} of {SaveLayout.MainInventoryCount}"
             : $"Secondary bar slot {SelectedSlot + 1 - SaveLayout.MainInventoryCount} of {SAV.Common.Inventory.Length - SaveLayout.MainInventoryCount}";
@@ -220,7 +230,14 @@ public partial class Main : Form
             throw new ArgumentException("Select an item from the list.");
         if (!HasSlotChanges)
             return;
-        SAV.Common.Inventory[SelectedSlot].Set(item.Value, (int)NUD_Count.Value);
+        var slot = SAV.Common.Inventory[SelectedSlot];
+        var pending = new Item(new byte[Item.SIZE], slot.PaintEditable) { RawValue = slot.RawValue, Count = slot.Count };
+        pending.Set(item.Value, (int)NUD_Count.Value);
+        if (!pending.IsEmpty && Editor_Paint.HasChanges)
+            pending.Paint = Editor_Paint.Value;
+        slot.RawValue = pending.RawValue;
+        slot.Count = pending.Count;
+        Editor_Paint.LoadItem(slot);
         RefreshSlot();
     }
 
@@ -229,11 +246,52 @@ public partial class Main : Form
         if (SAV == null)
             return;
         var item = SAV.Common.Inventory[SelectedSlot];
-        var row = DGV_Items.Rows[SelectedSlot - InventoryStart];
+        var row = DGV_Items.Rows.Cast<DataGridViewRow>().First(z => (int)z.Tag! == SelectedSlot);
         row.Cells[1].Value = ItemSprite.GetItemSprite(item.ItemId);
         row.Cells[2].Value = GetItemName(item.ItemId);
         row.Cells[3].Value = item.Count;
+        row.Cells[4].Value = ItemPaintInfo.GetDescription(item);
+        // A selection event is still inside the grid's current-cell update.
+        if (ChangingSlot)
+        {
+            if (DGV_Items.IsHandleCreated)
+                DGV_Items.BeginInvoke((Action)SortInventory);
+        }
+        else
+            SortInventory();
         UpdateStatus();
+    }
+
+    private void SortInventory()
+    {
+        if (SAV == null)
+            return;
+        var loading = Loading;
+        Loading = true;
+        var slot = DGV_Items.CurrentRow?.Tag as int? ?? SelectedSlot;
+        DGV_Items.Sort(new InventoryComparer(SAV.Common.Inventory, InventorySortColumn, InventorySortDescending));
+        var row = DGV_Items.Rows.Cast<DataGridViewRow>().FirstOrDefault(z => (int)z.Tag! == slot);
+        if (row != null)
+            DGV_Items.CurrentCell = row.Cells[2];
+        foreach (DataGridViewColumn column in DGV_Items.Columns)
+            column.HeaderCell.SortGlyphDirection = column.Index == InventorySortColumn
+                ? InventorySortDescending ? SortOrder.Descending : SortOrder.Ascending : SortOrder.None;
+        Loading = loading;
+    }
+
+    private void DGV_Items_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+    {
+        if (e.ColumnIndex is not (0 or 2 or 3))
+            return;
+        InventorySortDescending = InventorySortColumn == e.ColumnIndex && !InventorySortDescending;
+        InventorySortColumn = e.ColumnIndex;
+        SortInventory();
+    }
+
+    private void Editor_Paint_SizeChanged(object sender, EventArgs e)
+    {
+        L_Catalog.Top = Editor_Paint.Bottom + 18;
+        L_ItemHelp.Top = L_Catalog.Bottom + 12;
     }
 
     private void B_Set_Click(object sender, EventArgs e)
@@ -263,6 +321,13 @@ public partial class Main : Form
             NUD_Count.Value = 0;
         else if (NUD_Count.Value == 0)
             NUD_Count.Value = 1;
+        if (SAV != null)
+        {
+            var slot = SAV.Common.Inventory[SelectedSlot];
+            var pending = new Item(new byte[Item.SIZE], slot.PaintEditable) { RawValue = slot.RawValue, Count = slot.Count };
+            pending.Set(item.Value, (int)NUD_Count.Value);
+            Editor_Paint.LoadItem(pending);
+        }
     }
 
     private void CB_Item_DrawItem(object sender, DrawItemEventArgs e)

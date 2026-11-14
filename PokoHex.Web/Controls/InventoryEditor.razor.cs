@@ -21,6 +21,18 @@ public partial class InventoryEditor
     private int InventoryStart;
     private ushort ItemId;
     private int Count;
+    private ushort Color1;
+    private ushort Color2;
+    private ushort Color3;
+    private ushort Pattern;
+    private int PaintArea;
+    private bool GalleryOpen;
+    private int SwatchCount => PaintArea == 3 ? AllowsPattern ? ItemPaintInfo.PatternCount : 0 : ItemPaintInfo.ColorCount;
+    private int SelectedSwatch => PaintArea switch { 0 => Pattern == 0 ? Color1 : -1, 1 => Color2, 2 => Color3, _ => Pattern };
+    private ItemPaint LoadedPaint;
+    private ItemPaint Paint => new(Color1, Color2, Color3, Pattern);
+    private int PaintCount => SAV.Inventory[SelectedSlot].PaintEditable ? ItemPaintInfo.GetColorCount(ItemId) : 0;
+    private bool AllowsPattern => SAV.Inventory[SelectedSlot].PaintEditable && ItemPaintInfo.AllowsPattern(ItemId);
     private int Revision;
     private int ChoiceRevision;
     private GameStrings? Catalog;
@@ -49,7 +61,8 @@ public partial class InventoryEditor
             return CachedChoices;
         }
     }
-    public bool HasChanges => SAV.Inventory[SelectedSlot].ItemId != ItemId || SAV.Inventory[SelectedSlot].Count != Count;
+    public bool HasChanges => SAV.Inventory[SelectedSlot].ItemId != ItemId || SAV.Inventory[SelectedSlot].Count != Count ||
+        PaintCount != 0 && Paint != LoadedPaint;
 
     protected override bool ShouldRender() => Active;
 
@@ -69,6 +82,39 @@ public partial class InventoryEditor
         var item = SAV.Inventory[SelectedSlot];
         ItemId = item.ItemId;
         Count = item.Count;
+        LoadPaint(item);
+    }
+
+    private void LoadPaint(Item item)
+    {
+        LoadedPaint = item.Paint;
+        Color1 = LoadedPaint.Color1;
+        Color2 = LoadedPaint.Color2;
+        Color3 = LoadedPaint.Color3;
+        Pattern = LoadedPaint.Pattern;
+        if (PaintArea == 3 ? !AllowsPattern && Pattern == 0 : PaintArea >= PaintCount)
+            PaintArea = 0;
+    }
+
+    private string GetSwatchName(int value) => PaintArea == 3
+        ? value == 0 ? "None" : $"Pattern {value}" : ItemPaintInfo.GetColorName(value);
+
+    private async Task SelectSwatch(ushort value)
+    {
+        if (PaintCount == 0 || value > SwatchCount)
+            return;
+        switch (PaintArea)
+        {
+            case 0: Pattern = 0; Color1 = value; break;
+            case 1: Color2 = value; break;
+            case 2: Color3 = value; break;
+            case 3:
+                Pattern = value;
+                if (!AllowsPattern && value == 0)
+                    PaintArea = 0;
+                break;
+        }
+        await NotifyChanged();
     }
 
     public void SaveChanges()
@@ -78,7 +124,14 @@ public partial class InventoryEditor
         if (HasChanges)
         {
             var previous = SAV.Inventory[SelectedSlot].ItemId;
-            SAV.Inventory[SelectedSlot].Set(ItemId, Count);
+            var slot = SAV.Inventory[SelectedSlot];
+            var pending = new Item(new byte[Item.SIZE], slot.PaintEditable) { RawValue = slot.RawValue, Count = slot.Count };
+            pending.Set(ItemId, Count);
+            if (!pending.IsEmpty && PaintCount != 0 && Paint != LoadedPaint)
+                pending.Paint = Paint;
+            slot.RawValue = pending.RawValue;
+            slot.Count = pending.Count;
+            LoadPaint(slot);
             Revision++;
             if (previous != SAV.Inventory[SelectedSlot].ItemId)
                 ChoiceRevision++;
@@ -110,6 +163,10 @@ public partial class InventoryEditor
             Count = 0;
         else if (Count == 0)
             Count = 1;
+        var slot = SAV.Inventory[SelectedSlot];
+        var pending = new Item(new byte[Item.SIZE], slot.PaintEditable) { RawValue = slot.RawValue, Count = slot.Count };
+        pending.Set(ItemId, Count);
+        LoadPaint(pending);
     }
 
     private void B_Set_Click()

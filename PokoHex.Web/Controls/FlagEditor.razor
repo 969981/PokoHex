@@ -18,10 +18,12 @@ else
                     <tbody>
                         @foreach (var index in Entries)
                         {
-                            <tr class="@(SelectedFlag == index ? "selected" : "")">
+                            <tr @key="index" class="@(SelectedFlag == index ? "selected" : "")">
                                 <td>@index</td>
                                 <td><button class="row-button" aria-pressed="@(SelectedFlag == index)" @onclick="() => SelectFlag(index)">@FunctionFlagInfo.GetName(index)</button></td>
-                                <td>@(Flags.GetFlag(index) ? "Yes" : "No")</td>
+                                <td><input type="checkbox" aria-label="@($"{FunctionFlagInfo.GetName(index)} ({index})")"
+                                    checked="@(SelectedFlag == index && HasChanges ? Enabled : Flags.GetFlag(index))"
+                                    @onchange="e => CHK_Flag_Changed(index, (bool)e.Value!)" /></td>
                             </tr>
                         }
                     </tbody>
