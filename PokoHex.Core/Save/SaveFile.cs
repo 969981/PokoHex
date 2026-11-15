@@ -21,6 +21,7 @@ public sealed class SaveFile
     public FunctionFlags? Flags { get; }
     public PhotoHistory? Photos { get; }
     public PhotoStyleHistory? PhotoStyles { get; }
+    public Catalogue? Catalogue { get; }
     public bool IsEdited => !Data.AsSpan().SequenceEqual(OriginalData);
 
     private SaveFile(byte[] original, byte[] data, SaveLayout layout)
@@ -41,6 +42,11 @@ public sealed class SaveFile
             Photos = new PhotoHistory(Data.AsMemory(layout.PhotoHistoryOffset, PhotoHistory.SIZE));
         if (layout.PhotoStyleOffset != 0)
             PhotoStyles = new PhotoStyleHistory(Data.AsMemory(layout.PhotoStyleOffset, PhotoStyleHistory.SIZE));
+        if (layout.PokedexOffset != 0)
+            Catalogue = new Catalogue(Data.AsMemory(layout.PokedexOffset, Catalogue.PokedexCount),
+                Data.AsMemory(layout.HabitatOffset, Catalogue.HabitatCount * Catalogue.HabitatSize),
+                Data.AsMemory(layout.RecipeOffset, Catalogue.RecipeCount * Catalogue.RecipeSize),
+                Data.AsMemory(layout.CookingOffset, Catalogue.CookingCount));
         if (layout.PlayerAbilitiesOffset != 0)
             Abilities = new PlayerAbilities(Data.AsMemory(layout.PlayerAbilitiesOffset, PlayerAbilities.SIZE),
                 Data.AsMemory(layout.FunctionFlagsOffset, FunctionFlags.SIZE));

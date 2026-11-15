@@ -1,0 +1,59 @@
+@if (Catalogue == null)
+{
+    <p class="empty-state">Catalogue isn’t available for this save version.</p>
+}
+else
+{
+    <div class="split catalogue-editor">
+        <div class="list-pane">
+            <div class="filterbar">
+                <label>View:
+                    <select aria-label="Catalogue" value="@((int)View)" @onchange="CB_View_Changed">
+                        @foreach (var view in Enum.GetValues<CatalogueType>())
+                        {
+                            <option value="@((int)view)">@CatalogueInfo.GetTitle(view)</option>
+                        }
+                    </select>
+                </label>
+                <input type="search" aria-label="Search catalogue" placeholder="Search name or ID" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
+            </div>
+            <div class="table-scroll">
+                <table class="inventory">
+                    <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @foreach (var entry in Filtered)
+                        {
+                            <tr @key="(View, entry.Value)" class="@(SelectedEntry == entry.Value ? "selected" : "")">
+                                <td>@entry.Value</td>
+                                <td><button class="row-button" aria-pressed="@(SelectedEntry == entry.Value)" @onclick="() => SelectEntry(entry.Value)"><img class="sprite" src="@SpriteUtil.GetCatalogue(View, entry.Value)" alt="" loading="lazy" />@entry.Text</button></td>
+                                <td>@CatalogueInfo.GetStatus(View, Catalogue.GetState(View, entry.Value))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="list-status">@Filtered.Length of @Entries.Length entries · @Complete complete</div>
+        </div>
+        <fieldset class="details">
+            <legend>@CatalogueInfo.GetTitle(View)</legend>
+            @if (SelectedEntry > 0)
+            {
+                <div class="portrait"><img class="sprite" src="@SpriteUtil.GetCatalogue(View, SelectedEntry)" alt="" /></div>
+                <h3>@CatalogueInfo.GetName(View, SelectedEntry)</h3>
+                <p>@CatalogueInfo.GetStatus(View, Catalogue.GetState(View, SelectedEntry))</p>
+            }
+            <div class="buttons">
+                <button class="primary" @onclick="B_Unlock_Click" disabled="@(!CanUnlock)">@CatalogueInfo.GetAction(View)</button>
+                @if (View is CatalogueType.Pokedex or CatalogueType.Habitats)
+                {
+                    <button @onclick="B_Partial_Click" disabled="@(!CanPartial)">@(View == CatalogueType.Pokedex ? "Mark seen" : "Discover")</button>
+                }
+            </div>
+            <div class="buttons"><button @onclick="B_All_Click" disabled="@(!CanUnlockAll)" title="Applies to the whole selected catalogue.">@CatalogueInfo.GetAction(View, true)</button></div>
+            <div class="buttons">
+                <button @onclick="B_Undo_Click" disabled="@(!Catalogue.CanUndo)">Undo</button>
+                <button @onclick="B_Redo_Click" disabled="@(!Catalogue.CanRedo)">Redo</button>
+            </div>
+        </fieldset>
+    </div>
+}

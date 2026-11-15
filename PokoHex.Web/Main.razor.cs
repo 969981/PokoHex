@@ -13,7 +13,7 @@ namespace PokoHex.Web;
 
 public partial class Main : IAsyncDisposable
 {
-    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Photo Ops"];
+    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Photo Ops", "Catalogue"];
     private static readonly string[] LanguageNames = ["English", "日本語", "Deutsch", "Español", "Français", "Italiano", "한국어", "简体中文", "繁體中文"];
     private SaveFolder? SAV;
     private InventoryEditor? Editor_Items;

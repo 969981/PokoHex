@@ -12,6 +12,8 @@ public sealed class GameStrings
     public readonly string[] photooplist;
     public readonly string[] photoframelist;
     public readonly string[] photofilterlist;
+    public readonly string[] dexlist;
+    public readonly string[] habitatlist;
     //public readonly string[] uselist;
     public readonly ItemInfo[] ItemDataSource;
     public readonly AbilityInfo[] SkillDataSource;
@@ -30,6 +32,8 @@ public sealed class GameStrings
         photooplist = GameLanguage.GetStrings("photoop", language);
         photoframelist = GameLanguage.GetStrings("photoframe", language);
         photofilterlist = GameLanguage.GetStrings("photofilter", language);
+        dexlist = GameLanguage.GetStrings("dex", language);
+        habitatlist = GameLanguage.GetStrings("habitat", language);
         PhotoFrameDataSource = GetPhotoStyles(photoframelist);
         PhotoFilterDataSource = GetPhotoStyles(photofilterlist);
         var photos = new List<ItemInfo>();

@@ -94,6 +94,11 @@ p { line-height: 1.6; }
 .ability-editor .details select { width: 100%; }
 .flag-editor .inventory th:nth-child(2) { width: auto; }
 .flag-editor .inventory th:last-child { width: 85px; }
+.catalogue-editor .filterbar label { display: flex; align-items: center; gap: 8px; }
+.catalogue-editor .inventory th:nth-child(2) { width: auto; }
+.catalogue-editor .inventory th:last-child { width: 115px; }
+.catalogue-editor .row-button { display: flex; align-items: center; gap: 10px; }
+.catalogue-editor .buttons { flex-wrap: wrap; }
 .wheel-slots option { padding: 5px 7px; }
 .sprite { display: inline-block; width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; vertical-align: middle; }
 .details { align-self: start; }

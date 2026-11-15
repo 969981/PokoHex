@@ -10,6 +10,47 @@ namespace PokoHex.Tests;
 public static class DumpTests
 {
     [Fact]
+    public static void ReadCatalogueTables()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        Assert.Equal(ResourceUtil.GetBinaryResource("catalogue_dex.bin"), GameCatalogueDumper.GetPokedexMap(path!));
+        Assert.Equal(ResourceUtil.GetBinaryResource("catalogue_recipes.bin"), GameCatalogueDumper.GetRecipeMap(path!));
+        Assert.Equal(ResourceUtil.GetBinaryResource("catalogue_cooking.bin"), GameCatalogueDumper.GetCookingMap(path!));
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var strings = GameInfo.GetStrings(language);
+            Assert.Equal(GameCatalogueDumper.GetPokedexList(path!, language), strings.dexlist);
+            Assert.Equal(GameCatalogueDumper.GetHabitatList(path!, language), strings.habitatlist);
+        }
+        Assert.Equal(374, CatalogueInfo.GetEntries(CatalogueType.Pokedex).Length);
+        Assert.Equal(257, CatalogueInfo.GetEntries(CatalogueType.Habitats).Length);
+        Assert.Equal(921, CatalogueInfo.GetEntries(CatalogueType.Crafting).Length);
+        Assert.Equal(34, CatalogueInfo.GetEntries(CatalogueType.Cooking).Length);
+    }
+
+    [Fact]
+    public static void DumpCatalogueResources()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");
+        var destination = Environment.GetEnvironmentVariable("POKOHEX_RESOURCE_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_GAME_PATH to the update game dump.");
+        Assert.SkipUnless(!string.IsNullOrWhiteSpace(destination), "Set POKOHEX_RESOURCE_PATH to the resource output folder.");
+        GameCatalogueDumper.UpdateDumps(path!, destination!);
+        Assert.Equal(GameCatalogueDumper.GetPokedexMap(path!), File.ReadAllBytes(Path.Combine(destination!, "byte", "catalogue_dex.bin")));
+        Assert.Equal(GameCatalogueDumper.GetRecipeMap(path!), File.ReadAllBytes(Path.Combine(destination!, "byte", "catalogue_recipes.bin")));
+        Assert.Equal(GameCatalogueDumper.GetCookingMap(path!), File.ReadAllBytes(Path.Combine(destination!, "byte", "catalogue_cooking.bin")));
+        for (int i = 0; i < GameLanguage.LanguageCount; i++)
+        {
+            var language = GameLanguage.Language2Char(i);
+            var folder = Path.Combine(destination!, "text", language);
+            Assert.Equal(GameCatalogueDumper.GetPokedexList(path!, language), File.ReadAllLines(Path.Combine(folder, $"text_dex_{language}.txt")));
+            Assert.Equal(GameCatalogueDumper.GetHabitatList(path!, language), File.ReadAllLines(Path.Combine(folder, $"text_habitat_{language}.txt")));
+        }
+    }
+
+    [Fact]
     public static void ReadPhotoOpTables()
     {
         var path = Environment.GetEnvironmentVariable("POKOHEX_GAME_PATH");

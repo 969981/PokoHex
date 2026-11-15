@@ -6841,4 +6841,7 @@
   <data name="photo_unavailable" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Photo\photo_unavailable.png;System.Drawing.Bitmap, System.Drawing.Common</value>
   </data>
+  <data name="catalogue_habitat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Catalogue\catalogue_habitat.png;System.Drawing.Bitmap, System.Drawing.Common</value>
+  </data>
 </root>

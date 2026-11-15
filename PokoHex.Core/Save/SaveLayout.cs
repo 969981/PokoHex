@@ -24,6 +24,10 @@ public sealed class SaveLayout
     public int LifeCoinsOffset { get; }
     public int PhotoHistoryOffset { get; }
     public int PhotoStyleOffset => PhotoHistoryOffset == 0 ? 0 : PhotoHistoryOffset + PhotoHistory.SIZE;
+    public int PokedexOffset => Version == Version381.Version ? 0x426EFF : 0;
+    public int HabitatOffset => Version == Version381.Version ? 0x4256FF : 0;
+    public int RecipeOffset => Version == Version381.Version ? 0x3FCB4C : 0;
+    public int CookingOffset => Version == Version381.Version ? 0x3FEE74 : 0;
     private SaveLayout(uint version, int dataSize, int playerNameOffset, int inventoryOffset, int villagerCount = 0, int villagerHomeOffset = 0, int playerAbilitiesOffset = 0, int functionFlagsOffset = 0, int lifeCoinsOffset = 0, int photoHistoryOffset = 0)
     {
         Version = version;

@@ -27,3 +27,5 @@ artifacts/
 *.zip
 *.bak
 *.log
+
+!PokoHex.Core/Resources/byte/catalogue_*.bin
