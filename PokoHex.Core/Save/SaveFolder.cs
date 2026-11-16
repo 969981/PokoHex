@@ -32,13 +32,13 @@ public sealed class SaveFolder
             var isPhoto = inCommonFolder && name.Equals("SCSHDAT.BIN", StringComparison.OrdinalIgnoreCase);
             var isStage = inCommonFolder && name.Length == 12 && name.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase)
                 && name.EndsWith(".BIN", StringComparison.OrdinalIgnoreCase) && int.TryParse(name.AsSpan(6, 2), out _);
-            var kind = isCommon ? "Common" : isPhoto ? "Photo Ops" : isStage ? "Stage" : "Other";
+            var kind = isCommon ? "Common" : isPhoto ? "SCSHDAT (unverified)" : isStage ? "Stage" : "Other";
             var support = isCommon ? "Player / inventory / villagers"
                 : isStage ? "Limited map editing"
-                : isPhoto ? "Verified screenshot editing"
+                : isPhoto ? "Preserved unchanged; fields not verified"
                 : "Preserved unchanged";
             return new SavePartInfo(relative, kind, support, entry.Value.LongLength,
-                Convert.ToHexString(SHA256.HashData(entry.Value)), isCommon || isStage || isPhoto);
+                Convert.ToHexString(SHA256.HashData(entry.Value)), isCommon || isStage);
         }).OrderBy(x => x.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray();
         StageIds = files.Keys.Where(z => Path.GetDirectoryName(z)!.Equals("G00", StringComparison.OrdinalIgnoreCase))
             .Select(Path.GetFileName).Where(z => z!.Length == 12 && z.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase) &&
