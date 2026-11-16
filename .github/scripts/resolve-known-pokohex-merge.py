@@ -79,9 +79,8 @@ def resolve_savefolder(ours: str, upstream: str) -> str:
     photo_write = upstream[first:last]
     ours = splice(ours, "        foreach (var (area, stage) in Stages.Where",
                   photo_write + "        foreach (var (area, stage) in Stages.Where")
-    ours = splice(ours, '"SCSHDAT (unverified)"', '"Photo Ops"')
-    ours = splice(ours, '"Preserved unchanged; fields not verified"', '"Verified screenshot editing"')
-    ours = splice(ours, "isCommon || isStage);", "isCommon || isStage || isPhoto);")
+    # The Files inventory remains conservative: arbitrary SCSHDAT bytes are
+    # read-only until the Photo Ops parser validates their actual format.
     for anchor in ("public SavePartInfo[] SaveParts", "public PhotoOps GetPhotoOps()",
                    "Photos.Screenshots.Write()", "if (flatG00 && nestedG00)"):
         if anchor not in ours:
