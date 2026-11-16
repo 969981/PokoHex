@@ -10,19 +10,19 @@ import subprocess
 import sys
 
 FILES = {
-    # Reviewed November 9 conflict: local read-only Files inspector vs
-    # upstream new Flags editor. Exact stage SHA pairs fail closed on changes.
-    "PokoHex/Main.cs": (
-        "480b17b300ce592b9f67b4f7d88482b65c18bb63",
-        "d7116a7fb102ed8c2c43da4836cc6c05d1b3fc50",
+    # Exact reviewed 2026-11-16 conflicts: retain the fork's read-only Files
+    # inventory and flat G00 import while adopting upstream Photo Ops/Catalogue.
+    "PokoHex.Core/Save/SaveFolder.cs": (
+        "b545962bccbe89f625f5f0dbb8124465d19bbfef",
+        "c4df6524bab27b1aeaef1d1552610ed2f23e13c0",
     ),
     "PokoHex/Main.Designer.cs": (
-        "0cff5bbf2bb3c34105732a89844089f62b3cfd1a",
-        "d748b873df86bfb7dd9bf4a0a2ac33717be28a09",
+        "c2f90973b845ba0fdd0b2d35761dadcb56a10f5c",
+        "f1415c9a0ef51209684adbbca3b6b9b48eb91611",
     ),
     "PokoHex.Web/Main.razor.cs": (
-        "acf750c11fe67fbd581d0fbf2b2aee63848e565e",
-        "4460f59f50c5f1376da9055dd1787845d196ef6b",
+        "732d0759953c2c434c67238bb4304bfc018be589",
+        "21b2b98cebe63188805ea91ece97f8992cbcc41d",
     ),
 }
 
@@ -59,19 +59,50 @@ def resolve_main(up: str) -> str:
     return up
 
 
+def resolve_savefolder(ours: str, upstream: str) -> str:
+    # Keep the audited inventory, SHA-256 and flat/nested G00 input support.
+    # Add upstream's lazily loaded Photo Ops and verified screenshot export.
+    ours = splice(ours,
+        "    private readonly Dictionary<int, StageSave> Stages = [];\n",
+        "    private readonly Dictionary<int, StageSave> Stages = [];\n"
+        "    private PhotoOps? Photos;\n")
+    ours = splice(ours,
+        "    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited);",
+        "    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited) || Photos?.Screenshots.IsEdited == true;")
+    first = upstream.index("    public PhotoOps GetPhotoOps()\n")
+    last = upstream.index("    public static SaveFolder Read(string path)\n", first)
+    photo_method = upstream[first:last]
+    ours = splice(ours, "    public static SaveFolder Read(string path)\n",
+                  photo_method + "    public static SaveFolder Read(string path)\n")
+    first = upstream.index("        if (Photos?.Screenshots.IsEdited == true)\n")
+    last = upstream.index("        foreach (var (area, stage) in Stages.Where", first)
+    photo_write = upstream[first:last]
+    ours = splice(ours, "        foreach (var (area, stage) in Stages.Where",
+                  photo_write + "        foreach (var (area, stage) in Stages.Where")
+    ours = splice(ours, '"SCSHDAT (unverified)"', '"Photo Ops"')
+    ours = splice(ours, '"Preserved unchanged; fields not verified"', '"Verified screenshot editing"')
+    ours = splice(ours, "isCommon || isStage);", "isCommon || isStage || isPhoto);")
+    for anchor in ("public SavePartInfo[] SaveParts", "public PhotoOps GetPhotoOps()",
+                   "Photos.Screenshots.Write()", "if (flatG00 && nestedG00)"):
+        if anchor not in ours:
+            raise RuntimeError(f"Missing merged SaveFolder feature: {anchor}")
+    return ours
+
+
 def resolve_designer(up: str) -> str:
     up = splice(up, '        var flags = new TabPage("Flags");\n',
                 '        var flags = new TabPage("Flags");\n'
                 '        var files = new TabPage("Files");\n'
                 '        DGV_SaveParts = new DataGridView();\n')
-    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags]);\n",
-                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, files]);\n"
+    up = splice(up, "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, photos, catalogue]);\n",
+                "        TC_Editor.TabPages.AddRange([player, items, villagers, map, flags, photos, catalogue, files]);\n"
                 + "        DGV_SaveParts.Dock = DockStyle.Fill;\n        DGV_SaveParts.ReadOnly = true;\n        DGV_SaveParts.AllowUserToAddRows = false;\n        DGV_SaveParts.AllowUserToDeleteRows = false;\n        DGV_SaveParts.AllowUserToResizeRows = false;\n        DGV_SaveParts.RowHeadersVisible = false;\n        DGV_SaveParts.SelectionMode = DataGridViewSelectionMode.FullRowSelect;\n        DGV_SaveParts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;\n        DGV_SaveParts.BackgroundColor = SystemColors.Window;\n        DGV_SaveParts.Columns.Add(\"Path\", \"Path\");\n        DGV_SaveParts.Columns.Add(\"Kind\", \"Type\");\n        DGV_SaveParts.Columns.Add(\"Bytes\", \"Bytes\");\n        DGV_SaveParts.Columns.Add(\"Support\", \"Edit support\");\n        DGV_SaveParts.Columns.Add(\"Hash\", \"Original SHA-256\");\n        files.Controls.Add(DGV_SaveParts);\n")
     up = splice(up, "    private DataGridView DGV_Items = null!;\n",
                 "    private DataGridView DGV_Items = null!;\n"
                 "    private DataGridView DGV_SaveParts = null!;\n")
     for anchor in ("Editor_Flags = new FlagEditor", "flags.Controls.Add(Editor_Flags)",
                    "Editor_Skills = new AbilityEditor", "Editor_Reactions = new AbilityEditor",
+                   "Editor_Photos = new PhotoOpEditor", "Editor_Catalogue = new CatalogueEditor",
                    "DGV_SaveParts.ReadOnly = true", "files.Controls.Add(DGV_SaveParts)"):
         if anchor not in up:
             raise RuntimeError(f"Missing merged Designer feature: {anchor}")
@@ -80,10 +111,10 @@ def resolve_designer(up: str) -> str:
 
 def resolve_web(up: str) -> str:
     up = splice(up,
-                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags"];\n',
-                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Files"];\n')
+                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Photo Ops", "Catalogue"];\n',
+                '    private static readonly string[] Tabs = ["Player", "Items", "Villagers", "Map", "Flags", "Photo Ops", "Catalogue", "Files"];\n')
     for anchor in ('private FlagEditor? Editor_Flags;', 'Editor_Flags?.SaveChanges();',
-                   '"Flags", "Files"'):
+                   '"Flags", "Photo Ops", "Catalogue", "Files"', 'PhotosOpened'):
         if anchor not in up:
             raise RuntimeError(f"Missing merged web feature: {anchor}")
     return up
@@ -105,8 +136,8 @@ def main() -> None:
 
     for path in FILES:
         upstream = load_stage(path, 3)
-        if path == "PokoHex/Main.cs":
-            merged = resolve_main(upstream)
+        if path == "PokoHex.Core/Save/SaveFolder.cs":
+            merged = resolve_savefolder(load_stage(path, 2), upstream)
         elif path == "PokoHex/Main.Designer.cs":
             merged = resolve_designer(upstream)
         elif path == "PokoHex.Web/Main.razor.cs":
@@ -115,9 +146,9 @@ def main() -> None:
             raise RuntimeError(f"Unexpected merge file: {path}")
         if any(marker in merged for marker in ("<<<<<<<", ">>>>>>>")):
             raise RuntimeError(f"Conflict marker in {path}")
-        prefix = b"\xef\xbb\xbf" if path.startswith("PokoHex/") else b""
+        prefix = b"\xef\xbb\xbf" if path.startswith(("PokoHex/", "PokoHex.Core/")) else b""
         Path(path).write_bytes(prefix + merged.encode("utf-8"))
-        print(f"Resolved {path}: local Files inspector + upstream Flags/Skills/Reactions")
+        print(f"Resolved {path}: local Files inspector + upstream Photo Ops/Catalogue")
     print("Verified known-only conflict resolution. Git staging and commit happen in the workflow.")
 
 
