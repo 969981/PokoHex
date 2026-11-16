@@ -12,9 +12,10 @@ public sealed class SaveFolder
     public SaveFile Common { get; }
     private readonly Dictionary<string, byte[]> Files;
     private readonly Dictionary<int, StageSave> Stages = [];
+    private PhotoOps? Photos;
     public int[] StageIds { get; }
     public SavePartInfo[] SaveParts { get; }
-    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited);
+    public bool IsEdited => Common.IsEdited || Stages.Values.Any(z => z.IsEdited) || Photos?.Screenshots.IsEdited == true;
 
     private SaveFolder(string folder, Dictionary<string, byte[]> files)
     {
@@ -31,13 +32,13 @@ public sealed class SaveFolder
             var isPhoto = inCommonFolder && name.Equals("SCSHDAT.BIN", StringComparison.OrdinalIgnoreCase);
             var isStage = inCommonFolder && name.Length == 12 && name.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase)
                 && name.EndsWith(".BIN", StringComparison.OrdinalIgnoreCase) && int.TryParse(name.AsSpan(6, 2), out _);
-            var kind = isCommon ? "Common" : isPhoto ? "SCSHDAT (unverified)" : isStage ? "Stage" : "Other";
+            var kind = isCommon ? "Common" : isPhoto ? "Photo Ops" : isStage ? "Stage" : "Other";
             var support = isCommon ? "Player / inventory / villagers"
                 : isStage ? "Limited map editing"
-                : isPhoto ? "Preserved unchanged; fields not verified"
+                : isPhoto ? "Verified screenshot editing"
                 : "Preserved unchanged";
             return new SavePartInfo(relative, kind, support, entry.Value.LongLength,
-                Convert.ToHexString(SHA256.HashData(entry.Value)), isCommon || isStage);
+                Convert.ToHexString(SHA256.HashData(entry.Value)), isCommon || isStage || isPhoto);
         }).OrderBy(x => x.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray();
         StageIds = files.Keys.Where(z => Path.GetDirectoryName(z)!.Equals("G00", StringComparison.OrdinalIgnoreCase))
             .Select(Path.GetFileName).Where(z => z!.Length == 12 && z.StartsWith("STGDAT", StringComparison.OrdinalIgnoreCase) &&
@@ -54,6 +55,18 @@ public sealed class SaveFolder
         stage = StageSave.Read(Files[Path.Combine("G00", $"STGDAT{area:D2}.BIN")]);
         Stages.Add(area, stage);
         return stage;
+    }
+
+    public PhotoOps GetPhotoOps()
+    {
+        if (Photos != null)
+            return Photos;
+        if (Common.Photos == null)
+            throw new InvalidDataException("Photo Ops aren’t available for this save version.");
+        if (!Files.TryGetValue(Path.Combine("G00", "SCSHDAT.BIN"), out var data))
+            throw new InvalidDataException("The photo file is missing.");
+        Photos = new PhotoOps(Common.Photos, ScreenshotSave.Read(data));
+        return Photos;
     }
 
     public static SaveFolder Read(string path)
@@ -138,6 +151,14 @@ public sealed class SaveFolder
         {
             [Path.Combine("G00", "CMNDAT.BIN")] = common,
         };
+        if (Photos?.Screenshots.IsEdited == true)
+        {
+            var data = Photos.Screenshots.Write();
+            var verified = ScreenshotSave.Read(data);
+            if (!verified.Data.Span.SequenceEqual(Photos.Screenshots.Data.Span))
+                throw new InvalidDataException("The edited photos could not be verified.");
+            edited.Add(Path.Combine("G00", "SCSHDAT.BIN"), data);
+        }
         foreach (var (area, stage) in Stages.Where(z => z.Value.IsEdited))
         {
             var data = stage.Write();

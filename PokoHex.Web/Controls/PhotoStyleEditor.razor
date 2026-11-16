@@ -1,0 +1,21 @@
+<div class="split photo-style-editor">
+    <div class="list-pane">
+        <div class="filterbar">
+            <input type="search" aria-label="@(Filters ? "Search filters" : "Search frames")" placeholder="Search name or ID" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
+        </div>
+        <div class="photo-gallery">
+            @foreach (var item in Entries)
+            {
+                <button @key="item.Value" class="@(SelectedStyle == item.Value ? "selected" : "")" aria-pressed="@(SelectedStyle == item.Value)" title="@item.Text" @onclick="() => SelectStyle(item.Value)">
+                    <img src="@SpriteUtil.GetPhotoStyle(item.Value, Filters)" alt="" loading="lazy" />
+                    <span>@item.Text</span>
+                </button>
+            }
+        </div>
+    </div>
+    <fieldset class="details photo-details">
+        <legend>@PhotoStyleInfo.GetName(SelectedStyle, Filters)</legend>
+        <div class="photo-preview photo-style-preview @(Filters ? "photo-filter-preview" : "")"><img src="@Preview" alt="@PhotoStyleInfo.GetName(SelectedStyle, Filters)" /></div>
+        <p>@Status</p>
+    </fieldset>
+</div>

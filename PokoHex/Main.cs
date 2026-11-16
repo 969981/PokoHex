@@ -79,6 +79,8 @@ public partial class Main : Form
             Editor_Skills.LoadSave(save.Common);
             Editor_Reactions.LoadSave(save.Common);
             Editor_Flags.LoadSave(save.Common);
+            Editor_Photos.LoadSave(save);
+            Editor_Catalogue.LoadSave(save.Common);
             RB_Skills.Checked = true;
             Text = $"PokoHex / {Path.GetFileName(save.Folder)}";
             UpdateStatus();
@@ -152,6 +154,8 @@ public partial class Main : Form
         Editor_Skills.RefreshLanguage();
         Editor_Reactions.RefreshLanguage();
         Editor_Flags.RefreshLanguage();
+        Editor_Photos.RefreshLanguage();
+        Editor_Catalogue.RefreshLanguage();
         Items = GameInfo.Strings.ItemDataSource;
         BindItems();
         Loading = true;
@@ -373,6 +377,8 @@ public partial class Main : Form
             Editor_Skills.LoadSave(SAV.Common);
             Editor_Reactions.LoadSave(SAV.Common);
             Editor_Flags.LoadSave(SAV.Common);
+            Editor_Photos.LoadSave(SAV);
+            Editor_Catalogue.LoadSave(SAV.Common);
             Text = $"PokoHex / {Path.GetFileName(SAV.Folder)}";
             LoadSlot();
             L_Status.Text = $"Exported to {dialog.SelectedPath}";
@@ -389,6 +395,10 @@ public partial class Main : Form
         if (Loading || SAV == null)
             return;
         Editor_Flags.RefreshValues();
+        if (TC_Editor.SelectedTab?.Controls.Contains(Editor_Photos) == true)
+            Editor_Photos.RefreshValues();
+        if (TC_Editor.SelectedTab?.Controls.Contains(Editor_Catalogue) == true)
+            Editor_Catalogue.RefreshValues();
         Editor_Skills.RefreshValues();
         Editor_Reactions.RefreshValues();
     }

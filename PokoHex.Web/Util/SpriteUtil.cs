@@ -4,6 +4,16 @@ namespace PokoHex.Web;
 
 public static class SpriteUtil
 {
+    public static string? GetCatalogue(CatalogueType type, int index) => type switch
+    {
+        CatalogueType.Pokedex => GetVillager(CatalogueInfo.GetResident(index)),
+        CatalogueType.Habitats => "images/catalogue/catalogue_habitat.png",
+        CatalogueType.Crafting or CatalogueType.Cooking => GetItem(CatalogueInfo.GetItem(type, index)),
+        _ => null,
+    };
+
+    public static string? GetPhotoStyle(int index, bool filters = false, bool preview = false) => PhotoStyleInfo.IsPublic(index, filters)
+        ? $"images/photo/photo_{(filters ? "filter" : preview && index != 0 ? "frame_full" : "frame")}_{index:D2}.png" : null;
     public static string? GetPaint(int color) => color is > 0 and <= ItemPaintInfo.ColorCount ? $"images/paint/paint_{color:D2}.png" : null;
     public static string? GetSkill(int index) => Skill.IsPublic(index) ? $"images/skills/skill_{index:D4}.png" : null;
     public static string? GetReaction(int index) => Reaction.IsPublic(index) ? $"images/reactions/reaction_{index:D4}.png" : null;

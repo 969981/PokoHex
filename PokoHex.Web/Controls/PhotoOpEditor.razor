@@ -1,0 +1,82 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="photo-views">
+    <img src="images/photo/photo_camera.png" alt="" />
+    <label for="photo-view">View:</label>
+    <select id="photo-view" @bind:get="View" @bind:set="CB_View_Changed">
+        <option value="0">Photo Ops</option><option value="1">Frames</option><option value="2">Filters</option>
+    </select>
+</div>
+@if (StylesOpened)
+{
+    <section hidden="@(View == 0)"><PhotoStyleEditor SAV="SAV.Common" Filters="@(View == 2)" Language="Language" Active="@(Active && View != 0)" /></section>
+}
+<section hidden="@(View != 0)">
+@if (Loading)
+{
+    <p class="empty-state" role="status">Loading photos…</p>
+}
+else if (Photos == null)
+{
+    <p class="empty-state">@LoadError</p>
+}
+else
+{
+    <div class="split photo-editor">
+        <div class="list-pane">
+            <div class="filterbar">
+                <input type="search" aria-label="Search Photo Ops" placeholder="Search name or ID" @bind:get="Search" @bind:set="TB_Search_Changed" @bind:event="oninput" />
+            </div>
+            <div class="table-scroll">
+                <table class="inventory">
+                    <thead><tr><th>Name</th><th>Completed</th><th>Photos</th></tr></thead>
+                    <tbody>
+                        @foreach (var index in Entries)
+                        {
+                            <tr @key="index" class="@(SelectedOp == index ? "selected" : "")">
+                                <td><button class="row-button" aria-pressed="@(SelectedOp == index)" @onclick="() => SelectPhoto(index)">@PhotoOpInfo.GetName(index)</button></td>
+                                <td>@(Photos.IsCompleted(index) ? "Yes" : "No")</td>
+                                <td>@Photos.GetPhotos(index).Length</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <fieldset class="details photo-details">
+            <legend>@(SelectedOp > 0 ? PhotoOpInfo.GetName(SelectedOp) : "Photo Op")</legend>
+            @if (SelectedOp > 0)
+            {
+                <label for="photo-capture">Photo:</label>
+                <select id="photo-capture" @bind:get="SelectedPhoto" @bind:set="SelectCapture" disabled="@(Captures.Length < 2)">
+                    @for (int i = 0; i < Captures.Length; i++)
+                    {
+                        <option value="@Captures[i].Index">Photo @(i + 1)</option>
+                    }
+                </select>
+                <div class="photo-preview">
+                    @if (Preview.Length != 0)
+                    {
+                        <img @key="Preview" src="@Preview" alt="@PhotoOpInfo.GetName(SelectedOp)" @onerror="() => Preview = string.Empty" />
+                    }
+                    else
+                    {
+                        <img src="images/photo/@(Captures.Length == 0 ? "photo_empty.png" : "photo_unavailable.png")" alt="" />
+                        <span>@(Photos.GetPhotos(SelectedOp).Length == 0 ? "No photo" : "Preview unavailable")</span>
+                    }
+                </div>
+                @if (Photos.GetResetError(SelectedOp) is { } error)
+                {
+                    <p class="muted">@error</p>
+                }
+            }
+            <div class="buttons">
+                <button class="primary" @onclick="B_Reset_Click" disabled="@(SelectedOp < 1 || !Photos.CanReset(SelectedOp))">Reset</button>
+                <button @onclick="B_Undo_Click" disabled="@(!Photos.CanUndo)">Undo</button>
+                <button @onclick="B_Redo_Click" disabled="@(!Photos.CanRedo)">Redo</button>
+                <button @onclick="B_ExportPhoto_Click" disabled="@(SelectedImage.IsEmpty)">Export photo…</button>
+            </div>
+        </fieldset>
+    </div>
+}
+</section>
