@@ -79,8 +79,8 @@ jobs:
               # All other conflicts are intentionally fatal to avoid losing features.
               # The resolver compares both unmerged Git index blob SHAs and fails closed.
               python3 .github/scripts/resolve-known-pokohex-merge.py
-              git add -- PokoHex/Main.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
-              git diff --cached --check -- PokoHex/Main.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
+              git add -- PokoHex.Core/Save/SaveFolder.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
+              git diff --cached --check -- PokoHex.Core/Save/SaveFolder.cs PokoHex/Main.Designer.cs PokoHex.Web/Main.razor.cs
               git commit --no-edit
             fi
             git push origin HEAD:main
