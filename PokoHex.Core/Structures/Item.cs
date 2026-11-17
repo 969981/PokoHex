@@ -3,7 +3,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace PokoHex.Core;
 
-public sealed class Item(Memory<byte> raw, bool paintEditable = true)
+public sealed class Item(Memory<byte> raw, bool paintEditable = true, Memory<byte> obtained = default)
 {
     public const int SIZE = 5;
     public const uint ItemIdMask = 0x1FFF;
@@ -14,7 +14,14 @@ public sealed class Item(Memory<byte> raw, bool paintEditable = true)
     public uint RawValue
     {
         get => ReadUInt32LittleEndian(Data);
-        set => WriteUInt32LittleEndian(Data, value);
+        set
+        {
+            WriteUInt32LittleEndian(Data, value);
+            // New items also need an entry in the Collection.
+            var id = (int)(value & ItemIdMask);
+            if (id != 0 && id < obtained.Length && obtained.Span[id] == 0)
+                obtained.Span[id] = 0x43;
+        }
     }
 
     public ushort ItemId

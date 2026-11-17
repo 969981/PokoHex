@@ -32,7 +32,8 @@ public sealed class SaveFile
         Layout = layout;
         Inventory = Enumerable.Range(0, layout.InventoryCount)
             .Select(i => new Item(Data.AsMemory(layout.InventoryOffset + (i * Item.SIZE), Item.SIZE),
-                layout.Version == SaveLayout.Version381.Version)).ToArray();
+                layout.Version == SaveLayout.Version381.Version,
+                layout.ObtainedItemsOffset != 0 ? Data.AsMemory(layout.ObtainedItemsOffset, SaveLayout.ObtainedItemsCount) : default)).ToArray();
         Villagers = Enumerable.Range(0, layout.VillagerCount)
             .Select(i => new Villager(i, Data.AsMemory(i * Villager.SIZE, Villager.SIZE),
                 Data.AsMemory(layout.VillagerHomeOffset + (i * VillagerHome.SIZE), VillagerHome.SIZE))).ToArray();

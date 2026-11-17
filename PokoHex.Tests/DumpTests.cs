@@ -4,6 +4,7 @@ using System.Linq;
 using PokoHex.Core;
 using PokoHex.Parsing;
 using Xunit;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace PokoHex.Tests;
 
@@ -243,6 +244,33 @@ public static class DumpTests
             Assert.Equal(GameItemDumper.GetItemList(path!, language), strings.itemlist);
             Assert.Equal(GameItemDumper.ReadItems(path!, language), strings.ItemDataSource);
         }
+    }
+
+    [Fact]
+    public static void RegisterInventoryItem()
+    {
+        var path = Environment.GetEnvironmentVariable("POKOHEX_SAVE_PATH");
+        Assert.SkipUnless(Directory.Exists(path), "Set POKOHEX_SAVE_PATH to a save folder.");
+        var save = SaveFolder.Read(path!);
+        var common = save.Common;
+        var layout = common.Layout;
+        Assert.SkipUnless(layout.ObtainedItemsOffset != 0, "This save has no supported item Collection history.");
+        var file = Path.Combine(save.Folder, "G00", "CMNDAT.BIN");
+        var original = File.ReadAllBytes(file);
+        var expected = (byte[])common.Data.Clone();
+        var entry = GameInfo.Strings.ItemDataSource.FirstOrDefault(z => z.Value != 0 && z.Value < SaveLayout.ObtainedItemsCount && expected[layout.ObtainedItemsOffset + z.Value] == 0);
+        Assert.SkipUnless(entry != null, "This save has no unregistered catalog item.");
+        var id = entry!.Value;
+        var pending = new Item(new byte[Item.SIZE]);
+        pending.Set(id, 1);
+        Assert.Equal(0, common.Data[layout.ObtainedItemsOffset + id]);
+        common.Inventory[0].RawValue = pending.RawValue;
+        common.Inventory[0].Count = pending.Count;
+        WriteUInt32LittleEndian(expected.AsSpan(layout.InventoryOffset), pending.RawValue);
+        expected[layout.InventoryOffset + Item.SIZE - 1] = 1;
+        expected[layout.ObtainedItemsOffset + id] = 0x43;
+        Assert.Equal(expected, SaveFile.Read(common.Write()).Data);
+        Assert.Equal(original, File.ReadAllBytes(file));
     }
 
     [Fact]
